@@ -2,8 +2,11 @@ import os
 import re
 import pandas as pd
 import numpy as np
+import spacy
 from homogenitization import homogenize_series
-from entity_filtering import is_contextual_playlist
+from entity_filtering import is_contextual_playlist, setup_knowledge_base
+from feature_expansion import expand_feature
+from WCSS import *
 from tqdm import tqdm
 
 # --- CONFIGURATION ---
@@ -11,6 +14,7 @@ RAW_FILE = 'spotify_dataset.csv'
 FIXED_CSV = 'final_fixed.csv'
 FINAL_PARQUET = 'spotify_final_healed.parquet'
 FULLY_PROCESSED_PARQUET = 'spotify_fully_processed.parquet'
+RANDOM_SEED = 42
 
 def fix_nested_quotes(line):
     # Fixes internal quotes without breaking CSV structure
@@ -62,6 +66,7 @@ def load_data():
         return create_gold_file()
     return pd.read_parquet(FINAL_PARQUET)
 
+
 if __name__ == "__main__":
     # 1. Load the Data
     df = load_data()
@@ -77,42 +82,30 @@ if __name__ == "__main__":
         df.to_parquet(FINAL_PARQUET, index=False)
         print("Homogenization complete and saved.")
 
-    # WE ONLY DO THIS IF 'spotify_fully_processed.parquet' DOES NOT EXIST, OTHERWISE WE ASSUME IT'S BEEN DONE AND JUST LOAD IT
+    # 3. Entity Filtering with spaCy
     if os.path.exists(FULLY_PROCESSED_PARQUET):
         print("\n[INFO] 'spotify_fully_processed.parquet' already exists. Loading it directly...")
         df = pd.read_parquet(FULLY_PROCESSED_PARQUET)
     else:
-        # 3. SET UP KNOWLEDGE BASE (Loading Bar 1)
-        print("\n[1/3] Building Knowledge Base for Filter...")
-        # We use only unique values to keep the Set size manageable and fast
-        known_artists = set(tqdm(df['artistname'].str.lower().dropna().unique(), desc="Indexing Artists"))
-        
-        known_genres = {
-            'rock', 'pop', 'hip hop', 'rap', 'jazz', 'country', 'classical', 
-            'metal', 'edm', 'r&b', 'indie', 'dance', 'house', 'techno'
-        }
+        # knowledge base for filtering
+        known_artists, known_tracks, known_genres = setup_knowledge_base(FINAL_PARQUET)
 
-        # 4. UNIQUE ENTITY FILTERING (Loading Bar 2)
-        # Optimization: Don't run spaCy 13 million times! Run it once per unique name.
-        print(f"\n[2/3] Identifying unique playlists for Entity Filtering...")
+        # Get unique playlist names for filtering
         unique_playlists = df['homogenized_playlist'].unique()
         
-        print(f"Analyzing {len(unique_playlists):,} unique names with spaCy (en_core_web_lg)...")
-        
-        # Process unique names with a progress bar
-        # We pass the sets into the function as required
+        print("\nLoading spaCy Language Model (en_core_web_lg)...")
+        nlp = spacy.load("en_core_web_lg", disable=["parser", "attribute_ruler", "lemmatizer"])
+        # Create a mapping of playlist name to whether it's contextual or not
         results_map = {
-            name: is_contextual_playlist(str(name), known_artists, known_genres, known_genres=known_genres) 
+            name: is_contextual_playlist(str(name), nlp, known_artists=known_artists, known_tracks=known_tracks, known_genres=known_genres) 
             for name in tqdm(unique_playlists, desc="Entity Filtering")
         }
 
-        # 5. MAPPING RESULTS (Loading Bar 3)
+        # Map results back to the full dataset
         print("\n[3/3] Mapping results back to master dataset...")
         df['is_contextual'] = df['homogenized_playlist'].map(results_map)
-
-        # 6. Final Results
         print("\n--- Results ---")
-        # Show only the kept ones for the preview
+        # Print 10 unique random, where we see the playlist name and whether it's contextual or not
         print(df[df['is_contextual'] == True][['playlistname', 'homogenized_playlist']].head(10))
         
         # Final Save
@@ -128,4 +121,34 @@ if __name__ == "__main__":
     # Printing for 10 unique rows with non-contextual playlists
     print("\nSample of Non-Contextual Playlists:")
     print(df[df['is_contextual'] == False].drop_duplicates(subset=['homogenized_playlist']).head(10))
-    
+
+    # 4. Feature Expansion for Contextual Playlists
+    if 'expanded_features' not in df.columns:
+        print("\nExpanding features for contextual playlists...")
+        # Get unique contextual playlist names
+        unique_contextual_playlists = df[df['is_contextual'] == True]['homogenized_playlist'].unique()
+        # Expand features for unique names
+        expanded_features_map = {
+            name: expand_feature(name) for name in tqdm(unique_contextual_playlists, desc="Expanding Features")
+        }
+        # Map the expanded features back to the full dataset
+        df['expanded_features'] = df['homogenized_playlist'].map(expanded_features_map)
+        df.to_parquet('spotify_fully_processed.parquet', index=False)
+    else: 
+        print("\nExpanded features already exist. Skipping expansion step.")
+        # Print 10 unqiue random, where we see the playlist name and the expanded features
+        print("\nSample of Expanded Features:")
+        sample_expanded = df[df['is_contextual'] == True][['homogenized_playlist', 'expanded_features']].drop_duplicates(subset=['homogenized_playlist']).sample(10, random_state=RANDOM_SEED)
+        print(sample_expanded)
+
+    # 5. Clustering Analysis with WCSS
+    print("\nCalculating WCSS to determine optimal number of clusters...")
+    # use df apply to calculate WCSS and graph it
+    optimal_k, wcss, wcss_delta, avg_delta, std_delta, k_range = calculate_wcss(df['expanded_features'], sample_frac=1.00)
+    # Check if WCSS folder exists, if not create it
+    if not os.path.exists('WCSS'):
+        os.makedirs('WCSS')
+    graph_wcss(wcss, k_range, title_suffix=f"(Optimal k={optimal_k})")
+    # but have shapes (98,) and (97,)
+    threshold = avg_delta-std_delta
+    graph_delta_wcss(wcss_delta, k_range, avg_delta, std_delta, threshold, title_suffix=f"(Delta WCSS)")

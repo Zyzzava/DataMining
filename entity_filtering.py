@@ -17,7 +17,6 @@ def setup_knowledge_base(file_path):
     print(f"Done! Loaded {len(df_full):,} rows in {time.time() - start_time:.2f}s")
 
     # 2. Build Lookup Sets with Progress Bars
-    # We use unique() first to make the Set building faster
     print("\nExtracting unique Artists...")
     artists = set(tqdm(df_full['artistname'].str.lower().dropna().unique(), desc="Building Artist Set"))
     
@@ -31,12 +30,8 @@ def setup_knowledge_base(file_path):
     
     return artists, tracks, genres
 
-def is_contextual_playlist(playlist_name, known_artists, known_tracks, known_genres):
-    """The logic remains the same, but we pass the sets in to avoid reloading every time"""
-    # --- CONFIGURATION ---
-    # Use the large model as requested, but disable components we don't need for speed
-    print("Loading spaCy Language Model (en_core_web_lg)...")
-    nlp = spacy.load("en_core_web_lg", disable=["parser", "attribute_ruler"])
+def is_contextual_playlist(playlist_name, nlp, known_artists, known_tracks, known_genres):
+    """The logic remains the same, but we pass the sets AND the model in to avoid reloading every time"""
     
     if not playlist_name or not isinstance(playlist_name, str):
         return False
@@ -51,11 +46,11 @@ def is_contextual_playlist(playlist_name, known_artists, known_tracks, known_gen
     if not doc.ents:
         return True
     
-    non_contextual_entities = ['PERSON', 'ORG']
+    non_contextual_entities = ['PERSON', 'ORG', 'WORK_OF_ART']
     for ent in doc.ents:
         if ent.label_ in non_contextual_entities:
             # If entity dominates the string
-            if len(ent.text) >= (len(playlist_name) * 0.9):
+            if len(ent.text) >= (len(playlist_name) * 0.8):
                 # Hallucination check
                 if any(token.pos_ in ['ADJ', 'VERB'] for token in ent):
                     return True 
@@ -71,13 +66,16 @@ def main():
         print("Error: Parquet file not found. Please ensure the file path is correct.")
         return
 
+    print("\nLoading spaCy Language Model (en_core_web_lg)...")
+    nlp = spacy.load("en_core_web_lg", disable=["parser", "attribute_ruler", "lemmatizer"])
+
     # 2. Load the data you want to filter (using mock for example)
     mock_data = {
         'homogenized_playlist': [
             'summer party 2015', 'workout track', 'michael jackson', 
             'the beatles', 'lofi hip hop for studying', 'Kendrick Lamar',
             'cooking dinner in italy', 'Metallica - Black Album', 'chill vibes'
-        ] * 100  # Multiplying just to show the progress bar in action
+        ] 
     }
     mdf = pd.DataFrame(mock_data)
 
@@ -88,9 +86,10 @@ def main():
     
     # Use tqdm with pandas apply
     tqdm.pandas(desc="Filtering Progress")
+    
     mdf['keep_playlist'] = mdf['homogenized_playlist'].progress_apply(
         is_contextual_playlist, 
-        args=(known_artists, known_tracks, known_genres)
+        args=(nlp, known_artists, known_tracks, known_genres)
     )
 
     filtered_df = mdf[mdf['keep_playlist'] == True].copy()
@@ -99,6 +98,9 @@ def main():
     print(f"FILTERING COMPLETE")
     print(f"Kept {len(filtered_df):,} out of {len(mdf):,} playlists.")
     print(f"{'='*50}")
+
+    print("\nSample of Contextual Playlists:")
+    print(filtered_df[['homogenized_playlist', 'keep_playlist']].head(10))
 
 if __name__ == "__main__":
     main()

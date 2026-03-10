@@ -1,5 +1,7 @@
 
 from nltk.corpus import wordnet
+from tqdm import tqdm
+import pandas as pd
 
 def expand_feature(playlist_name):
     '''
@@ -29,8 +31,4 @@ def expand_feature(playlist_name):
     
     return ' '.join(expanded_features)
 
-
-test_name = "chill grill"
-print(f"Original: {test_name}")
-print(f"Expanded: {expand_feature(test_name)}")
-
+tqdm.pandas(desc="Expanding Features")
