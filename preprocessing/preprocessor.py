@@ -9,6 +9,7 @@ from tqdm import tqdm
 from preprocessing.homogenitization import homogenize_series
 from preprocessing.entity_filtering import setup_knowledge_base, is_contextual_playlist
 from preprocessing.feature_expansion import expand_feature
+from preprocessing.stop_word_filtering import filter_stop_words_step
 
 # --- CONFIGURATION ---
 # Everything is in the data folder
@@ -105,12 +106,34 @@ def expand_features(df):
         return df
 
     print("\nExpanding features for contextual playlists...")
-    unique_contextual_playlists = df[df['is_contextual'] == True]['homogenized_playlist'].unique()
+    
+    unique_contextual_playlists = df[df['is_contextual'] == True]['filtered_playlist'].unique()
     
     expanded_features_map = {
         name: expand_feature(name) for name in tqdm(unique_contextual_playlists, desc="Expanding Features")
     }
     
-    df['expanded_features'] = df['homogenized_playlist'].map(expanded_features_map)
+    df['expanded_features'] = df['filtered_playlist'].map(expanded_features_map)
     df.to_parquet(FULLY_PROCESSED_PARQUET, index=False)
+    return df
+
+def remove_stop_words(df):
+    """Removes stop words from homogenized playlists."""
+    if 'filtered_playlist' in df.columns:
+        print("\nStop words already filtered. Skipping.")
+        return df
+
+    print("\nFiltering stop words from homogenized playlists...")
+    
+    nlp = spacy.load("en_core_web_lg", disable=["parser", "attribute_ruler", "lemmatizer"])
+    
+    unique_names = df['homogenized_playlist'].unique()
+    stop_word_map = {
+        name: filter_stop_words_step(str(name), nlp) 
+        for name in tqdm(unique_names, desc="Stop Word Filtering")
+    }
+    
+    df['filtered_playlist'] = df['homogenized_playlist'].map(stop_word_map)
+    df.to_parquet(FULLY_PROCESSED_PARQUET, index=False)
+    
     return df

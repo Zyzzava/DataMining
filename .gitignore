@@ -2,3 +2,4 @@ combined_dataset.csv
 spotify_dataset.csv
 spotify_final_healed.parquet
 spotify_fully_processed.parquet
+spotify_fully_processed_backup.parquet

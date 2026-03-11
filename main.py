@@ -6,6 +6,7 @@ from preprocessing.preprocessor import (
     homogenize_playlists,
     filter_entities,
     expand_features,
+    remove_stop_words
 )
 # modeling and evaluation tools
 from clustering.kmeans.WCSS.WCSS import calculate_and_graph_wcss
@@ -24,9 +25,17 @@ def main():
     # Entity Filtering with spaCy
     df = filter_entities(df)
 
+    df = remove_stop_words(df)
+
     # Feature Expansion for Contextual Playlists
     df = expand_features(df)
 
+    # SANITY CHECK - printing the names of all columns
+    print("\SANITY CHECK #1:")
+    for col in df.columns:
+        print(f" - {col}")
+
+    # RUNNING K-MEANS CLUSTERING AND EVALUATION
     # Matrix Creation, WCSS, and Clustering
     if 'k-means_cluster' not in df.columns:
         # Isolate UNIQUE expanded features safely to avoid NaN errors
@@ -45,6 +54,11 @@ def main():
     else:
         print("\nCluster tags already exist. Skipping TF-IDF, WCSS, and clustering steps.")
 
+    # SANITY CHECK - printing the names of all columns
+    print("\SANITY CHECK #2:")
+    for col in df.columns:
+        print(f" - {col}")
+
     # Quality Assurance
     if 'k-means_cluster' in df.columns:
         # run_sanity_check(df)
@@ -55,6 +69,11 @@ def main():
 
     # Evaluate the model using the specified evaluation pipeline
     eval(cluster_col='k-means_cluster', sample_frac=0.1)
+
+    # SANITY CHECK - printing the names of all columns
+    print("\SANITY CHECK #3:")
+    for col in df.columns:
+        print(f" - {col}")
 
 if __name__ == "__main__":
     main()

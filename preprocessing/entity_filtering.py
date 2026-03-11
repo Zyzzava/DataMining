@@ -41,6 +41,11 @@ def is_contextual_playlist(playlist_name, nlp, known_artists, known_tracks, know
     # Exact Match Checks
     if name_low in known_artists or name_low in known_tracks or name_low in known_genres:
         return False
+    
+    # If playlist name contains artist name, drop it (e.g., "Michael Jackson Hits")
+    for artist in known_artists:
+        if artist in name_low:
+            return False
         
     doc = nlp(playlist_name)
     if not doc.ents:
