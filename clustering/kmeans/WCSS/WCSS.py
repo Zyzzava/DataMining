@@ -1,3 +1,4 @@
+import os
 from sklearn.cluster import KMeans
 from tqdm import tqdm
 import numpy as np
@@ -73,3 +74,19 @@ def graph_delta_wcss(wcss_delta, k_range, avg_delta, std_delta, threshold, title
         os.makedirs('WCSS')
     plt.savefig(f'WCSS/delta_wcss_graph{title_suffix}.png')
     plt.show()
+
+def calculate_and_graph_wcss(tfidf_matrix):
+    """Calculates and graphs WCSS for optimal k discovery."""
+    if os.path.exists('WCSS') and os.listdir('WCSS'):
+        print("\nWCSS graphs already exist. Skipping WCSS calculation and graphing.")
+        return
+
+    print("\nCalculating WCSS to determine optimal number of clusters...")
+    optimal_k, wcss, wcss_delta, avg_delta, std_delta, k_range = calculate_wcss(tfidf_matrix)
+    
+    if not os.path.exists('WCSS'):
+        os.makedirs('WCSS')
+        
+    graph_wcss(wcss, k_range, title_suffix=f"(Optimal k={optimal_k})")
+    threshold = avg_delta - std_delta
+    graph_delta_wcss(wcss_delta, k_range, avg_delta, std_delta, threshold, title_suffix=f"(Delta WCSS)")
