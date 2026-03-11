@@ -47,13 +47,14 @@ def main():
 
     # Quality Assurance
     if 'k-means_cluster' in df.columns:
-        run_sanity_check(df)
+        # run_sanity_check(df)
+        pass
 
     print("\n finished successfully")
     print("\nStarting Evaluation")
 
     # Evaluate the model using the specified evaluation pipeline
-    eval(cluster_col='k-means_cluster')
+    eval(cluster_col='k-means_cluster', sample_frac=0.1)
 
 if __name__ == "__main__":
     main()

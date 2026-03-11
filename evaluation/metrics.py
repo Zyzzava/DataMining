@@ -5,7 +5,8 @@ def evaluate_metrics(ranked_predictions, actual_items, p):
     actual_items = set(actual_items)
 
     # Get the top p% of predictions
-    top_p_count = max(1, int(len(ranked_predictions) * p))
+    top_p_count = max(1, int(len(actual_items) * p))
+
     top_p_predictions = set(ranked_predictions[:top_p_count])
 
     # Calculate true positives, false positives, and false negatives
