@@ -1,29 +1,15 @@
-from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.cluster import KMeans
 from tqdm import tqdm
-import pandas as pd
 import numpy as np
 
-def calculate_wcss(df_column, sample_frac=0.05):
-    # 1. Extract strictly UNIQUE expanded playlists
-    unique_playlists = df_column.dropna().unique()
-    print(f"Total unique playlists to process: {len(unique_playlists):,}")
-
-    # 2. Optional: Sub-sample from the unique list if it's still too large
-    if sample_frac < 1.0:
-        sample_size = int(len(unique_playlists) * sample_frac)
-        unique_playlists = np.random.choice(unique_playlists, sample_size, replace=False)
-        print(f"Sub-sampled to {len(unique_playlists):,} unique playlists for WCSS.")
-
-    # 3. Create the TF-IDF Matrix (on unique strings only)
-    vectorizer = TfidfVectorizer(min_df=5, max_df=0.95)
-    tfidf_matrix = vectorizer.fit_transform(unique_playlists)
+def calculate_wcss(df_column, tfidf_matrix, sample_frac=0.05):
+    print(f"Calculating WCSS for matrix of shape: {tfidf_matrix.shape}")
 
     wcss = []
     k_range = range(2, 100) 
 
-    # 4. KMeans Loop
-    for k in tqdm(k_range, desc="Calculating WCSS (Unique)"):
+    # KMeans Loop
+    for k in tqdm(k_range, desc="Calculating WCSS"):
         kmeans = KMeans(
             n_clusters=k, 
             random_state=42, 
@@ -32,7 +18,7 @@ def calculate_wcss(df_column, sample_frac=0.05):
         kmeans.fit(tfidf_matrix)
         wcss.append(kmeans.inertia_)
 
-    # 5. Numerical Selection (De-trending)
+    # Numerical Selection (De-trending)
     wcss_diff = np.diff(wcss)
     avg_delta = np.mean(wcss_diff)
     std_delta = np.std(wcss_diff)

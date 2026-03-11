@@ -3,11 +3,13 @@ import re
 import pandas as pd
 import numpy as np
 import spacy
-from homogenitization import homogenize_series
-from entity_filtering import is_contextual_playlist, setup_knowledge_base
-from feature_expansion import expand_feature
+from homogenitization import *
+from entity_filtering import *
+from feature_expansion import *
 from WCSS import *
+from clustering import *
 from tqdm import tqdm
+from sklearn.feature_extraction.text import TfidfVectorizer
 
 # --- CONFIGURATION ---
 RAW_FILE = 'spotify_dataset.csv'
@@ -141,14 +143,74 @@ if __name__ == "__main__":
         sample_expanded = df[df['is_contextual'] == True][['homogenized_playlist', 'expanded_features']].drop_duplicates(subset=['homogenized_playlist']).sample(10, random_state=RANDOM_SEED)
         print(sample_expanded)
 
-    # 5. Clustering Analysis with WCSS
-    print("\nCalculating WCSS to determine optimal number of clusters...")
-    # use df apply to calculate WCSS and graph it
-    optimal_k, wcss, wcss_delta, avg_delta, std_delta, k_range = calculate_wcss(df['expanded_features'], sample_frac=1.00)
-    # Check if WCSS folder exists, if not create it
-    if not os.path.exists('WCSS'):
-        os.makedirs('WCSS')
-    graph_wcss(wcss, k_range, title_suffix=f"(Optimal k={optimal_k})")
-    # but have shapes (98,) and (97,)
-    threshold = avg_delta-std_delta
-    graph_delta_wcss(wcss_delta, k_range, avg_delta, std_delta, threshold, title_suffix=f"(Delta WCSS)")
+    # 5. Clustering Analysis with WCSS if WCSS folder is empty
+
+    # 5.1 Isolate UNIQUE expanded features safely
+    # This prevents NameErrors and guarantees we only vectorize non-NaN expanded features
+    unique_texts = df[df['is_contextual'] == True]['expanded_features'].dropna().unique()
+
+    # 5.2 Create TF-IDF Matrix on the pre-aligned list
+    print(f"\nCreating TF-IDF matrix for {len(unique_texts)} unique expanded features...")
+    vectorizer = TfidfVectorizer(min_df=5, max_df=0.95)
+    tfidf_matrix = vectorizer.fit_transform(unique_texts)
+
+    # 5.3 WCSS Calculation
+    if os.path.exists('WCSS') and os.listdir('WCSS'):
+        print("\nWCSS graphs already exist. Skipping WCSS calculation and graphing.")
+    else:
+        print("\nCalculating WCSS to determine optimal number of clusters...")
+        # Now we only pass the matrix!
+        optimal_k, wcss, wcss_delta, avg_delta, std_delta, k_range = calculate_wcss(tfidf_matrix)
+        
+        if not os.path.exists('WCSS'):
+            os.makedirs('WCSS')
+        graph_wcss(wcss, k_range, title_suffix=f"(Optimal k={optimal_k})")
+        
+        threshold = avg_delta - std_delta
+        graph_delta_wcss(wcss_delta, k_range, avg_delta, std_delta, threshold, title_suffix=f"(Delta WCSS)")
+
+    # 6. Running final K-means (Tagging the dataset with k=30)
+    if 'k-means_cluster' not in df.columns:
+        print("\nAssigning contextual clusters (k=30) to the dataset...")
+        
+        # Pass BOTH the aligned text array and the matrix
+        df = apply_k_means(df, unique_texts, tfidf_matrix, text_column='expanded_features', k=30)
+        
+        df.to_parquet(FULLY_PROCESSED_PARQUET, index=False)
+        print(f"\nFinal dataset saved with 'k-means_cluster' tags to {FULLY_PROCESSED_PARQUET}!")
+    else:
+        print("\nK-means cluster tags already exist. Skipping final clustering.")
+        print("\nSample of Assigned Clusters:")
+        print(df[df['is_contextual'] == True][['homogenized_playlist', 'k-means_cluster']].drop_duplicates().head(10))
+
+    # --- High-Variety Cluster Sanity Check ---
+    print(f"\n{'='*30} HIGH-VARIETY CLUSTER SAMPLES {'='*30}")
+    # Pull 3 random clusters to inspect
+    sampled_ids = np.random.choice(df['k-means_cluster'].dropna().unique(), 3, replace=False)
+
+    for c_id in sorted(sampled_ids):
+        # Filter for the specific cluster
+        cluster_df = df[df['k-means_cluster'] == c_id]
+        
+        # Get unique playlists in this cluster to show total variety count
+        all_unique_playlists = cluster_df['playlistname'].unique()
+        
+        print(f"\n[Cluster {int(c_id)}] ({len(all_unique_playlists):,} Unique Contexts)")
+        
+        # Get unique songs, but shuffle them to see different parts of the cluster
+        unique_songs = cluster_df['trackname'].unique()
+        np.random.shuffle(unique_songs)
+        
+        # Inspect 5 random songs and the unique playlist names they appear under
+        for song in unique_songs[:5]:
+            # Extract unique playlist names for this specific song
+            associated_playlists = cluster_df[cluster_df['trackname'] == song]['playlistname'].unique()
+            
+            # Format the playlists for the printout (limit to 4 to keep it clean)
+            playlist_str = ", ".join(associated_playlists[:4])
+            if len(associated_playlists) > 4:
+                playlist_str += f" (+{len(associated_playlists)-4} more)"
+                
+            print(f"  🎵 {str(song)[:30]:<32} | Contexts: {playlist_str}")
+
+    print(f"\n{'='*90}")
