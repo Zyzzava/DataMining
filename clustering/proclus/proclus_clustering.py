@@ -5,7 +5,7 @@ def apply_proclus(df, unique_texts, tfidf_matrix, k=30, l=5):
     print(f"Applying PROCLUS clustering... on {len(unique_texts)} unique contexts")
 
     # convert matrix to a dense list of lists
-    # does mads computer have enough memory to handle this? if not, we might need to use a sparse representation or batch processing
+    # does mads computer have enough memory to handle this? hmmm
     dense_data = tfidf_matrix.toarray().tolist()
 
     # random medioid initialization
@@ -25,4 +25,12 @@ def apply_proclus(df, unique_texts, tfidf_matrix, k=30, l=5):
         for idx in cluster_indices:
             cluster_labels[idx] = cluster_id
     
+    # zip unique texts with their cluster labels
+    clustered_data = list(zip(unique_texts, cluster_labels))
+
+    #broadcast the cluster back to a new colloumn in the original dataframe
+    df['proclus_cluster'] = df['expanded_features'].map(clustered_data)
+    print("Added 'proclus_cluster' labels to the DataFrame.")
+
+    return df
     

@@ -82,7 +82,11 @@ def calculate_and_graph_wcss(tfidf_matrix):
         return
 
     print("\nCalculating WCSS to determine optimal number of clusters...")
-    optimal_k, wcss, wcss_delta, avg_delta, std_delta, k_range = calculate_wcss(tfidf_matrix)
+
+    df_column = 'expanded_features'
+    sample_frac = 1.0
+
+    optimal_k, wcss, wcss_delta, avg_delta, std_delta, k_range = calculate_wcss(df_column, tfidf_matrix, sample_frac=sample_frac)
     
     if not os.path.exists('WCSS'):
         os.makedirs('WCSS')
@@ -90,3 +94,4 @@ def calculate_and_graph_wcss(tfidf_matrix):
     graph_wcss(wcss, k_range, title_suffix=f"(Optimal k={optimal_k})")
     threshold = avg_delta - std_delta
     graph_delta_wcss(wcss_delta, k_range, avg_delta, std_delta, threshold, title_suffix=f"(Delta WCSS)")
+    return optimal_k

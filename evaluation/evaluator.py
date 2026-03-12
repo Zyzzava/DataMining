@@ -5,18 +5,19 @@ from evaluation.splitter import create_train_test_dict
 from evaluation.recommender import get_recommendations
 from collections import defaultdict
 from tqdm import tqdm
+from evaluation.plot_comparison import plot_f01_comparison
 
-def eval(cluster_col, sample_frac=0.1):    
-    # SEED NP RANDOM
+def eval(df, cluster_col, sample_frac=0.1):    
     np.random.seed(42)
 
-    df = pd.read_parquet('data/spotify_fully_processed.parquet')
-
     contextual_df = df[df['is_contextual'] == True]
-
     # unique clusters sorted largest -> smallest
-    unique_clusters = contextual_df[cluster_col].dropna().value_counts().index.tolist()
+    unique_clusters = contextual_df[cluster_col].dropna().value_counts().index.tolist()    
+    
+    # p values are the number of top recommendations to consider when evaluating precision, recall, and f-score
+    p_values = [0.1, 0.3, 0.5, 0.7, 1.0]
 
+    cluster_performances = {}
     # Loop through each unique cluster and process the data
     for current_cluster_id in unique_clusters:
         print(f"\nProcessing Cluster {current_cluster_id}...")
@@ -27,14 +28,20 @@ def eval(cluster_col, sample_frac=0.1):
         # transform and split
         train_dict, test_dict = create_train_test_dict(cluster_data)
         
-        # sub-sample the test users
+        # sub-sample the test users with floor ceiling subsampling
         all_test_users = list(test_dict.keys())
-        if sample_frac < 1.0:
-            n_samples = int(len(all_test_users) * sample_frac)
-            target_users = np.random.choice(all_test_users, n_samples, replace=False)
-            print(f"  -> Sub-sampling {sample_frac*100}%: evaluating {len(target_users)} users...")
-        else: 
+        total_cluster_users = len(all_test_users)
+        MIN_USERS_FOR_CF = 50
+        if total_cluster_users < MIN_USERS_FOR_CF:
+            print(f"  -> Skipping cluster (Only {total_cluster_users} users. CF requires a larger crowd).")
+            continue
+        TARGET_SAMPLE_SIZE = 200 
+        if total_cluster_users > TARGET_SAMPLE_SIZE:
+            target_users = np.random.choice(all_test_users, TARGET_SAMPLE_SIZE, replace=False)
+            print(f"  -> Sub-sampling to {TARGET_SAMPLE_SIZE} users (out of {total_cluster_users})...")
+        else:
             target_users = all_test_users
+            print(f"  -> Evaluating all {total_cluster_users} users in this cluster...")
 
         #build inverted user track index
         track_to_users_index = defaultdict(set)
@@ -42,8 +49,7 @@ def eval(cluster_col, sample_frac=0.1):
             for track in tracks:
                 track_to_users_index[track].add(user)
 
-        p_values = [0.1, 0.3, 0.5, 0.7, 1.0]
-        cluster_scores = {p: [] for p in p_values}
+        current_cluster_scores = {p: [] for p in p_values} 
         print(f"  -> Generating recommendations & evaluating {len(target_users)} sampled users...")        
         # run recommendations and evaluations for each user in the test set
         for target_user in tqdm(target_users, desc="Evaluating users", leave=False):
@@ -59,11 +65,42 @@ def eval(cluster_col, sample_frac=0.1):
                 )
                 
                 # Store the score for this specific user at this specific p-value
-                cluster_scores[p].append(metrics)
-        
-        # print average scores for this cluster at each p-value
+                current_cluster_scores[p].append(metrics['f_0.1'])
+
+        # After processing all users in the current cluster, calculate the average score for each p-value and store it
+        cluster_averages = {p: np.mean(current_cluster_scores[p]) if current_cluster_scores[p] else 0.0 for p in p_values}
+        cluster_performances[current_cluster_id] = cluster_averages
+    
+    # rank clusters based on the average f-score across all p-values
+    ranked_clusters = sorted(
+        cluster_performances.keys(), 
+        key=lambda c_id: np.mean(list(cluster_performances[c_id].values())), 
+        reverse=True
+    )
+
+    #helper function to graph the average of the top K clusters
+    def get_top_k_averages(k):
+        top_k_ids = ranked_clusters[:k]
+        k_averages = []
         for p in p_values:
-            avg_f_score = np.mean([user_score['f_0.1'] for user_score in cluster_scores[p]])            
-            print(f"    - p={p:<3} | Avg F0.1 Score: {avg_f_score:.4f}")
+            # Get the score at this p-value for the top K clusters, and average them
+            avg_at_p = np.mean([cluster_performances[c_id][p] for c_id in top_k_ids])
+            k_averages.append(avg_at_p)
+        return k_averages
+
+    #get results matching the paper
+    results = {
+        'top_1': get_top_k_averages(1),
+        'top_5': get_top_k_averages(5),
+        'top_10': get_top_k_averages(10),
+        'top_all': get_top_k_averages(len(ranked_clusters))
+    }
+
+    plot_f01_comparison(p_values, results)
+
+    print("Top-1 Average:  ", [round(x, 4) for x in results['top_1']])
+    print("Top-5 Average:  ", [round(x, 4) for x in results['top_5']])
+    print("Top-all Average:", [round(x, 4) for x in results['top_all']])
+
 
 

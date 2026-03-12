@@ -19,34 +19,27 @@ def setup_knowledge_base(file_path):
     # 2. Build Lookup Sets with Progress Bars
     print("\nExtracting unique Artists...")
     artists = set(tqdm(df_full['artistname'].str.lower().dropna().unique(), desc="Building Artist Set"))
-    
-    print("\nExtracting unique Tracks...")
-    tracks = set(tqdm(df_full['trackname'].str.lower().dropna().unique(), desc="Building Track Set"))
 
     genres = {
         'rock', 'pop', 'hip hop', 'rap', 'jazz', 'country', 'classical', 
         'metal', 'edm', 'r&b', 'indie', 'dance', 'house', 'techno'
     }
     
-    return artists, tracks, genres
+    return artists, genres
 
-def is_contextual_playlist(playlist_name, nlp, known_artists, known_tracks, known_genres):
-    """The logic remains the same, but we pass the sets AND the model in to avoid reloading every time"""
+def is_contextual_playlist(playlist_name, nlp, known_artists, known_genres):
+    """Evaluates if a playlist is contextual (situational/thematic)."""
     
     if not playlist_name or not isinstance(playlist_name, str):
         return False
     
     name_low = playlist_name.lower()
     
-    # Exact Match Checks
-    if name_low in known_artists or name_low in known_tracks or name_low in known_genres:
+    # 1. Exact Match Checks 
+    if name_low in known_artists or name_low in known_genres:
         return False
-    
-    # If playlist name contains artist name, drop it (e.g., "Michael Jackson Hits")
-    for artist in known_artists:
-        if artist in name_low:
-            return False
         
+    # 2. NLP Entity Recognition (Replaces the dangerous substring loop)
     doc = nlp(playlist_name)
     if not doc.ents:
         return True
@@ -54,9 +47,10 @@ def is_contextual_playlist(playlist_name, nlp, known_artists, known_tracks, know
     non_contextual_entities = ['PERSON', 'ORG', 'WORK_OF_ART']
     for ent in doc.ents:
         if ent.label_ in non_contextual_entities:
-            # If entity dominates the string
+            # If the artist/person/org dominates the string (e.g., "The Beatles Collection")
             if len(ent.text) >= (len(playlist_name) * 0.8):
-                # Hallucination check
+                # Hallucination check: if it contains an adjective or verb, keep it 
+                # (e.g., "Running with John" -> keep, "John Smith" -> drop)
                 if any(token.pos_ in ['ADJ', 'VERB'] for token in ent):
                     return True 
                 else:
@@ -66,7 +60,7 @@ def is_contextual_playlist(playlist_name, nlp, known_artists, known_tracks, know
 def main():
     # 1. Run the Setup Loading Screen
     try:
-        known_artists, known_tracks, known_genres = setup_knowledge_base('spotify_final_healed.parquet')
+        known_artists, known_genres = setup_knowledge_base('spotify_final_healed.parquet')
     except FileNotFoundError:
         print("Error: Parquet file not found. Please ensure the file path is correct.")
         return
@@ -94,7 +88,7 @@ def main():
     
     mdf['keep_playlist'] = mdf['homogenized_playlist'].progress_apply(
         is_contextual_playlist, 
-        args=(nlp, known_artists, known_tracks, known_genres)
+        args=(nlp, known_artists, known_genres)
     )
 
     filtered_df = mdf[mdf['keep_playlist'] == True].copy()

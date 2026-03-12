@@ -6,10 +6,10 @@ import spacy
 from tqdm import tqdm
 
 # Assuming these are in the same 'preprocessing' folder
-from preprocessing.homogenitization import homogenize_series
-from preprocessing.entity_filtering import setup_knowledge_base, is_contextual_playlist
-from preprocessing.feature_expansion import expand_feature
-from preprocessing.stop_word_filtering import filter_stop_words_step
+from preprocessing.homogenitization import *
+from preprocessing.entity_filtering import *
+from preprocessing.feature_expansion import *
+from preprocessing.stop_word_filtering import *
 
 # --- CONFIGURATION ---
 # Everything is in the data folder
@@ -83,14 +83,14 @@ def filter_entities(df):
         print("\n[INFO] 'spotify_fully_processed.parquet' already exists. Loading it directly...")
         return pd.read_parquet(FULLY_PROCESSED_PARQUET)
 
-    known_artists, known_tracks, known_genres = setup_knowledge_base(FINAL_PARQUET)
+    known_artists, known_genres = setup_knowledge_base(FINAL_PARQUET)
     unique_playlists = df['homogenized_playlist'].unique()
     
     print("\nLoading spaCy Language Model (en_core_web_lg)...")
     nlp = spacy.load("en_core_web_lg", disable=["parser", "attribute_ruler", "lemmatizer"])
     
     results_map = {
-        name: is_contextual_playlist(str(name), nlp, known_artists=known_artists, known_tracks=known_tracks, known_genres=known_genres) 
+        name: is_contextual_playlist(str(name), nlp, known_artists=known_artists, known_genres=known_genres) 
         for name in tqdm(unique_playlists, desc="Entity Filtering")
     }
 
@@ -115,25 +115,10 @@ def expand_features(df):
     
     df['expanded_features'] = df['filtered_playlist'].map(expanded_features_map)
     df.to_parquet(FULLY_PROCESSED_PARQUET, index=False)
+    
     return df
 
 def remove_stop_words(df):
     """Removes stop words from homogenized playlists."""
-    if 'filtered_playlist' in df.columns:
-        print("\nStop words already filtered. Skipping.")
-        return df
-
-    print("\nFiltering stop words from homogenized playlists...")
-    
-    nlp = spacy.load("en_core_web_lg", disable=["parser", "attribute_ruler", "lemmatizer"])
-    
-    unique_names = df['homogenized_playlist'].unique()
-    stop_word_map = {
-        name: filter_stop_words_step(str(name), nlp) 
-        for name in tqdm(unique_names, desc="Stop Word Filtering")
-    }
-    
-    df['filtered_playlist'] = df['homogenized_playlist'].map(stop_word_map)
-    df.to_parquet(FULLY_PROCESSED_PARQUET, index=False)
-    
+    df = filter_stop_words_step(df, FULLY_PROCESSED_PARQUET)
     return df
