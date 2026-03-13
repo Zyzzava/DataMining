@@ -1,0 +1,1 @@
+Place the downloaded dataset in the datafolder, and then ´python main.py´
