@@ -96,7 +96,7 @@ def eval(df, cluster_col, sample_frac=0.1):
         'top_all': get_top_k_averages(len(ranked_clusters))
     }
 
-    plot_f01_comparison(p_values, results)
+    plot_f01_comparison(p_values, results, title_prefix=f"Evaluation Results for Cluster Column: '{cluster_col}'")
 
     print("Top-1 Average:  ", [round(x, 4) for x in results['top_1']])
     print("Top-5 Average:  ", [round(x, 4) for x in results['top_5']])

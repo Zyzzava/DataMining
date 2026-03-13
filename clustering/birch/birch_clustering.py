@@ -1,21 +1,33 @@
 import numpy as np
 from sklearn.cluster import Birch
+from tqdm import tqdm
 
 
 def apply_birch(df, unique_texts, tfidf_matrix, k=34):
     print(f"Applying BIRCH clustering... on {len(unique_texts)} unique contexts")
 
-    # Initialize BIRCH with the specified number of clusters
-    birch = Birch(n_clusters=k)
+    birch = Birch(
+        threshold=0.5,       # Increased to reduce tree size
+        n_clusters=k,
+        branching_factor=50  # Default is usually fine if threshold is high enough
+    )
 
-    # Fit the model to the TF-IDF matrix
+    # progress bar for fitting
+    print("Fitting BIRCH model...")
     cluster_labels = birch.fit_predict(tfidf_matrix)
+    print(f"BIRCH clustering completed. Found {len(set(cluster_labels))} clusters.")
 
-    # zip
-    cluster_mapping = list(zip(unique_texts, cluster_labels))
+    # Progress bar
+    print("Building cluster mapping...")
+    cluster_mapping = {
+        text: label for text, label in tqdm(zip(unique_texts, cluster_labels), 
+        total=len(unique_texts), desc="Zipping labels")
+    }
 
-    #broadcast the cluster labels to the original dataframe
-    df['birch_cluster'] = df['expanded_features'].map(dict(cluster_mapping))
-    print("Added 'birch_cluster' labels to the DataFrame.")
+    # Progress bar
+    print(f"Broadcasting labels to {len(df):,} rows...")
+    tqdm.pandas(desc="Mapping Clusters")
+    df[f'birch_cluster_{k}'] = df['expanded_features'].progress_map(cluster_mapping.get)    
 
+    print(f"Added 'birch_cluster_{k}' labels to the DataFrame.")
     return df

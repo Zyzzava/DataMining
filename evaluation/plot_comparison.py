@@ -1,7 +1,8 @@
 import matplotlib.pyplot as plt
 import os
+import seaborn as sns
 
-def plot_f01_comparison(p_values, kmeans_scores):
+def plot_f01_comparison(p_values, kmeans_scores, title_prefix):
     output_dir = "evaluation/graphs"
     os.makedirs(output_dir, exist_ok=True)
 
@@ -19,7 +20,45 @@ def plot_f01_comparison(p_values, kmeans_scores):
     plt.grid(True, linestyle=':', alpha=0.7)
     
     # Save and Show
-    file_path = os.path.join(output_dir, "f01_replication_graph.png")
+    file_name = f"{title_prefix.replace(' ', '_').lower()}_f01_comparison.png"
+    file_path = os.path.join(output_dir, file_name)
     plt.savefig(file_path, dpi=300, bbox_inches='tight')
-    print("\nGraph successfully saved as 'f01_replication_graph.png'")
+    print(f"\nGraph successfully saved as '{file_name}'")
+    plt.show()
+
+
+def plot_cluster_distribution(df, cluster_col):
+    print(f"\n{'='*30}\nPLOTTING CLUSTER DISTRIBUTION\n{'='*30}")
+
+    cluster_counts = df[cluster_col].dropna().value_counts()
+
+    plt.figure(figsize=(12, 6))
+
+    sns.barplot(
+        x=cluster_counts.index.astype(int), 
+        y=cluster_counts.values, 
+        palette='viridis', 
+        hue=cluster_counts.index.astype(int), 
+        legend=False
+    )
+
+    # 5. Formatting the Graph
+    plt.title(f'Cluster Size Distribution ({cluster_col})', fontsize=14, fontweight='bold')
+    plt.xlabel('Cluster ID (Ranked Largest to Smallest)', fontsize=12)
+    plt.ylabel('Number of Playlists/Tracks', fontsize=12)
+    
+    # Rotate the x-axis labels in case you have 50+ clusters and they overlap
+    plt.xticks(rotation=45) 
+    
+    # Add a subtle grid line on the y-axis to make it easy to read the heights
+    plt.grid(axis='y', linestyle='--', alpha=0.7)
+    
+    # 6. Save and Show
+    output_dir = "evaluation/graphs"
+    os.makedirs(output_dir, exist_ok=True)
+    file_path = os.path.join(output_dir, f"distribution_{cluster_col}.png")
+    
+    plt.savefig(file_path, dpi=300, bbox_inches='tight')
+    print(f"-> Distribution graph saved successfully to: {file_path}")
+    
     plt.show()
