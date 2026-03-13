@@ -1,0 +1,27 @@
+TF-IDF MATRIX ANALYSIS REPORT
+    =============================
+    Matrix Shape: (100793, 24712)
+    Total Possible Elements: 2,490,796,616
+    Non-Zero Elements: 4,922,363
+    Matrix Sparsity: 99.8024%
+
+    DOCUMENT FREQUENCY (DF) STATS
+    -----------------------------
+    Mean Document Frequency: 199.2 playlists
+    Median Document Frequency: 31.0 playlists
+    Max Document Frequency: 35873 playlists
+
+    MAX_FEATURES RECOMMENDATIONS
+    -----------------------------
+    To speed up K-Means or BIRCH without losing the core structure of your data, 
+    you can drop the "long tail" of obscure words.
+
+    * To retain 80% of total information: set max_features=5678
+    * To retain 90% of total information: set max_features=9615
+    * To retain 95% of total information: set max_features=13643
+
+    Guideline: 
+    If BIRCH/K-Means is running out of memory or is too slow, use the 5678 
+    feature threshold. If it runs fine but clustering metrics are poor, increase 
+    towards the 13643 threshold to capture finer nuances.
+    

@@ -9,8 +9,9 @@ from evaluation.recommender import get_recommendations
 from collections import defaultdict
 from tqdm import tqdm
 from evaluation.plot_comparison import plot_cluster_distribution, plot_f01_comparison
+from evaluation.silhouette import evaluate_silhouette
 
-def eval(df, cluster_col, sample_frac=0.1, output_dir="evaluation/reports"):    
+def eval(df, cluster_col, unique_texts, tfidf_matrix, sample_frac=0.1, output_dir="evaluation/reports"):    
     """
     Evaluates the clustering performance and saves results to the algorithm's specific folder.
     """
@@ -18,6 +19,11 @@ def eval(df, cluster_col, sample_frac=0.1, output_dir="evaluation/reports"):
 
     # Set random seed for reproducibility
     np.random.seed(42)
+
+    # Sillhouette score evaluation
+    print(f"\n{'='*30}\nCALCULATING SILHOUETTE SCORE\n{'='*30}")
+    evaluate_silhouette(df, unique_texts=unique_texts, tfidf_matrix=tfidf_matrix, cluster_col=cluster_col)
+    ################################
 
     contextual_df = df[df['is_contextual'] == True]
     # unique clusters sorted largest -> smallest

@@ -84,9 +84,9 @@ def main():
     # CHOOSE WHICH ALGO
     ##########################
     algos = [
-        # KMeansClustering(k=55, max_iter=300, n_init=10, random_state=42),
-        # BirchClustering(k=55, threshold=0.9, branching_factor=25, batch_size=1000),
-        ProclusClustering(k=55, l=5, random_state=42),
+        KMeansClustering(k=55, max_iter=300, n_init=10, random_state=42),
+        BirchClustering(k=55, threshold=0.9, branching_factor=25, batch_size=1000),
+        #ProclusClustering(k=55, l=5, random_state=42),
     ]
 
     for algo in algos:
@@ -110,7 +110,7 @@ def main():
     ##########################
     if cluster_col:
         print(f"\n[INFO] Starting Evaluation on {cluster_col}...")
-        eval(df=df, cluster_col=cluster_col, sample_frac=0.01, output_dir=algo.report_dir)
+        eval(df=df, cluster_col=cluster_col, unique_texts=unique_texts, tfidf_matrix=tfidf_matrix, sample_frac=0.01, output_dir=algo.report_dir)
 
 if __name__ == "__main__":
     main()

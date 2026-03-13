@@ -1,6 +1,6 @@
 import os
 import numpy as np
-from pyclustering.cluster import proclus
+# from pyclustering.cluster import proclus
 from clustering.base_clustering import BaseClusteringAlgorithm
 
 class ProclusClustering(BaseClusteringAlgorithm):
