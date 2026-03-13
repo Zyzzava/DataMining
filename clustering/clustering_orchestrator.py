@@ -3,6 +3,8 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from clustering.birch.birch_clustering import apply_birch
 from clustering.kmeans.WCSS.WCSS import calculate_and_graph_wcss
 from clustering.kmeans.kmeans_clustering import apply_k_means
+from clustering.tf_idf_analysis.tf_idf_analysis import *
+from clustering.birch.birch_tuning import tune_birch_hyperparameters
 
 def run_kmeans_pipeline(df, preset_k=None, verbose=True):
     """
@@ -64,9 +66,12 @@ def run_birch_pipeline(df, preset_k=None, verbose=True):
         return df, None
 
     print(f"Creating TF-IDF matrix for {len(unique_texts):,} unique contexts...")
-    vectorizer = TfidfVectorizer(min_df=5, max_df=0.95)
+    vectorizer = TfidfVectorizer(min_df=5, max_df=0.95, max_features=5678)
     tfidf_matrix = vectorizer.fit_transform(unique_texts)
     vprint(f"TF-IDF Matrix Shape: {tfidf_matrix.shape}")
+
+    # tuning ran only once
+    # tune_birch_hyperparameters(tfidf_matrix, k=55)
 
     # Determine K
     if preset_k is not None:

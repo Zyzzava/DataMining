@@ -1,3 +1,6 @@
+import json
+import os
+
 import pandas as pd
 import numpy as np
 from evaluation.metrics import evaluate_metrics
@@ -5,9 +8,15 @@ from evaluation.splitter import create_train_test_dict
 from evaluation.recommender import get_recommendations
 from collections import defaultdict
 from tqdm import tqdm
-from evaluation.plot_comparison import plot_f01_comparison
+from evaluation.plot_comparison import plot_cluster_distribution, plot_f01_comparison
 
-def eval(df, cluster_col, sample_frac=0.1):    
+def eval(df, cluster_col, sample_frac=0.1, output_dir="evaluation/reports"):    
+    """
+    Evaluates the clustering performance and saves results to the algorithm's specific folder.
+    """
+    print(f"Saving evaluation results to: {output_dir}/")
+
+    # Set random seed for reproducibility
     np.random.seed(42)
 
     contextual_df = df[df['is_contextual'] == True]
@@ -96,8 +105,38 @@ def eval(df, cluster_col, sample_frac=0.1):
         'top_all': get_top_k_averages(len(ranked_clusters))
     }
 
-    plot_f01_comparison(p_values, results, title_prefix=f"Evaluation Results for Cluster Column: '{cluster_col}'")
+    # SAVING THE REPORT
+    report_path = os.path.join(output_dir, f"evaluation_metrics_{cluster_col}.txt")
+    print(f"\nSaving metrics to {report_path}...")
+    
+    with open(report_path, "w") as f:
+        f.write(f"=== Evaluation Results for {cluster_col} ===\n")
+        f.write(f"Total Clusters Evaluated: {len(ranked_clusters)}\n\n")
+        f.write(f"Top-1 Average  : {[round(x, 4) for x in results['top_1']]}\n")
+        f.write(f"Top-5 Average  : {[round(x, 4) for x in results['top_5']]}\n")
+        f.write(f"Top-10 Average : {[round(x, 4) for x in results['top_10']]}\n")
+        f.write(f"Top-all Average: {[round(x, 4) for x in results['top_all']]}\n")
 
+    # Save the raw cluster performances to JSON for deeper analysis later
+    with open(os.path.join(output_dir, "raw_cluster_scores.json"), "w") as f:
+        json.dump(cluster_performances, f, indent=4)
+
+    #Saving the graphs 
+    print("\nGenerating evaluation graphs...")
+    plot_f01_comparison(
+        p_values=p_values, 
+        kmeans_scores=results,
+        title_prefix=f"Evaluation Results for '{cluster_col}'",
+        save_path=os.path.join(output_dir, "f01_comparison.png")
+    )
+
+    plot_cluster_distribution(
+        df=contextual_df,
+        cluster_col=cluster_col,
+        save_path=os.path.join(output_dir, "cluster_distribution.png")
+    )
+
+    print("\n=== FINAL EVALUATION AVERAGES ===")
     print("Top-1 Average:  ", [round(x, 4) for x in results['top_1']])
     print("Top-5 Average:  ", [round(x, 4) for x in results['top_5']])
     print("Top-all Average:", [round(x, 4) for x in results['top_all']])

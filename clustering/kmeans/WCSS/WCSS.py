@@ -44,7 +44,7 @@ def graph_wcss(wcss, k_range, title_suffix=""):
     plt.ylabel('WCSS')
     plt.xticks(list(k_range)[::10]) 
     plt.grid(True)
-    plt.savefig(f'kmeans/WCSS/wcss_graph{title_suffix}.png')
+    plt.savefig(f'clustering/kmeans/WCSS/wcss_graph{title_suffix}.png')
 
 def graph_delta_wcss(wcss_delta, k_range, avg_delta, std_delta, threshold, title_suffix=""):
     import matplotlib.pyplot as plt
@@ -70,14 +70,14 @@ def graph_delta_wcss(wcss_delta, k_range, avg_delta, std_delta, threshold, title
     plt.grid(True)
     
     import os
-    if not os.path.exists('kmeans/WCSS'):
-        os.makedirs('kmeans/WCSS')
-    plt.savefig(f'kmeans/WCSS/delta_wcss_graph{title_suffix}.png')
+    if not os.path.exists('clustering/kmeans/WCSS'):
+        os.makedirs('clustering/kmeans/WCSS')
+    plt.savefig(f'clustering/kmeans/WCSS/delta_wcss_graph{title_suffix}.png')
     plt.show()
 
 def calculate_and_graph_wcss(tfidf_matrix):
     """Calculates and graphs WCSS for optimal k discovery."""
-    if os.path.exists('kmeans/WCSS') and os.listdir('kmeans/WCSS'):
+    if os.path.exists('clustering/kmeans/WCSS') and os.listdir('clustering/kmeans/WCSS'):
         print("\nWCSS graphs already exist. Skipping WCSS calculation and graphing.")
         return
 
@@ -88,8 +88,8 @@ def calculate_and_graph_wcss(tfidf_matrix):
 
     optimal_k, wcss, wcss_delta, avg_delta, std_delta, k_range = calculate_wcss(df_column, tfidf_matrix, sample_frac=sample_frac)
     
-    if not os.path.exists('kmeans/WCSS'):
-        os.makedirs('kmeans/WCSS')
+    if not os.path.exists('clustering/kmeans/WCSS'):
+        os.makedirs('clustering/kmeans/WCSS')
         
     graph_wcss(wcss, k_range, title_suffix=f"(Optimal k={optimal_k})")
     threshold = avg_delta - std_delta
