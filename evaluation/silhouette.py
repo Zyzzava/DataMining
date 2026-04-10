@@ -1,15 +1,29 @@
+import pandas as pd
 from sklearn.metrics import silhouette_score
 
 def evaluate_silhouette(df, unique_texts, tfidf_matrix, cluster_col='k-means_cluster', sample_size=5000):
     print(f"\n{'='*30}\nCALCULATING SILHOUETTE SCORE FOR {cluster_col}\n{'='*30}")
 
-    #align labels
-    text_to_cluster = dict(zip(df['expanded_features'], df[cluster_col]))
+    # Use only contextual rows with real labels so non-contextual NaNs do not overwrite valid assignments.
+    contextual_df = df[df['is_contextual'] == True]
+    labeled_contexts = contextual_df.dropna(subset=['expanded_features', cluster_col])
+    labeled_contexts = labeled_contexts.drop_duplicates(subset=['expanded_features'])
 
-    #ordered list of labels
-    ordered_labels = [text_to_cluster[text] for text in unique_texts]
+    text_to_cluster = dict(zip(labeled_contexts['expanded_features'], labeled_contexts[cluster_col]))
+
+    valid_mask = [text in text_to_cluster and pd.notna(text_to_cluster[text]) for text in unique_texts]
+    if not any(valid_mask):
+        print(f"-> Skipping silhouette score for {cluster_col}: no valid labels found.")
+        return
+
+    filtered_matrix = tfidf_matrix[valid_mask]
+    ordered_labels = [text_to_cluster[text] for text in unique_texts if text in text_to_cluster and pd.notna(text_to_cluster[text])]
+
+    if len(set(ordered_labels)) < 2:
+        print(f"-> Skipping silhouette score for {cluster_col}: need at least 2 clusters, found {len(set(ordered_labels))}.")
+        return
 
     #silhouette score with cosine because tf-idf vectors are sparse and high-dimensional
-    score = silhouette_score(tfidf_matrix, ordered_labels, metric='cosine', sample_size=sample_size, random_state=42)
+    score = silhouette_score(filtered_matrix, ordered_labels, metric='cosine', sample_size=sample_size, random_state=42)
 
     print(f"-> Final Silhouette Score ({cluster_col}): {score:.4f}")

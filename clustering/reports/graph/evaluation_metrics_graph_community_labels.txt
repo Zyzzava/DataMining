@@ -1,0 +1,7 @@
+=== Evaluation Results for graph_community_labels ===
+Total Clusters Evaluated: 328
+
+Top-1 Average  : [np.float64(0.9043), np.float64(0.9076), np.float64(0.9274), np.float64(0.9202), np.float64(0.9032)]
+Top-5 Average  : [np.float64(0.7892), np.float64(0.7924), np.float64(0.7993), np.float64(0.7902), np.float64(0.7548)]
+Top-10 Average : [np.float64(0.7346), np.float64(0.7414), np.float64(0.7451), np.float64(0.7352), np.float64(0.7007)]
+Top-all Average: [np.float64(0.3609), np.float64(0.3603), np.float64(0.3567), np.float64(0.3488), np.float64(0.3225)]

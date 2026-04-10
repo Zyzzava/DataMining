@@ -1,7 +1,7 @@
 import os
 from abc import ABC, abstractmethod
 
-class BaseClusteringAlgorithm(ABC):
+class BaseAlgorithm(ABC):
     def __init__(self, algo_name, config_name="default"):
         self.algo_name = algo_name
         self.config_name = config_name

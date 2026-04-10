@@ -1,9 +1,9 @@
 import os
 import numpy as np
 from sklearn.cluster import KMeans
-from clustering.base_clustering import BaseClusteringAlgorithm
+from interface.base_algorithm import BaseAlgorithm
 
-class KMeansClustering(BaseClusteringAlgorithm):
+class KMeansClustering(BaseAlgorithm):
     def __init__(self, k=30, n_init=10, max_iter=300, random_state=42):
         # Create a dynamic string based on the parameters
         config_str = f"k{k}_ninit{n_init}_maxiter{max_iter}"

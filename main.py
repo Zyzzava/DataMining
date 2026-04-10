@@ -13,7 +13,10 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 # Clustering algorithm imports
 from clustering.birch.birch_clustering import BirchClustering
 from clustering.kmeans.kmeans_clustering import KMeansClustering
-from clustering.proclus.proclus_clustering import ProclusClustering
+# from clustering.proclus.proclus_clustering import ProclusClustering # This don't work, do desktop
+
+# Graph import 
+from graph.knn.knn_graph import KNNGraph
 
 def main():
     ##########################
@@ -80,37 +83,76 @@ def main():
             print(f"No saved K value found. Defaulting to K={optimal_k}")
 
     ##########################
-    # Clustering Orchestration
-    # CHOOSE WHICH ALGO
+    # Clustering & Graph Orchestration
     ##########################
     algos = [
         KMeansClustering(k=55, max_iter=300, n_init=10, random_state=42),
         BirchClustering(k=55, threshold=0.9, branching_factor=25, batch_size=1000),
-        #ProclusClustering(k=55, l=5, random_state=42),
+        KNNGraph(k_neighbors=10)
     ]
 
     for algo in algos:
-        print(f"\n{'='*50}")
-        print(f"Executing Pipeline for: {algo.algo_name}")
-        print(f"{'='*50}")
+        # 1. Determine the target column name to check for existing results
+        if isinstance(algo, KNNGraph):
+            target_col = "graph_community_labels"
+            report_out = "clustering/reports/graph"
+        else:
+            target_col = f"k-means_cluster_{optimal_k}" if "KMeans" in algo.algo_name else f"birch_cluster_{optimal_k}"
+            report_out = algo.report_dir
 
-        # Run the math
-        df, cluster_col = algo.run_pipeline(df, unique_texts, tfidf_matrix)
+        # 2. Skip logic: check if the column is already in the dataframe
+        print(f"[DEBUG] Checking for: '{target_col}' in columns: {df.columns.tolist()[:10]}...")
+        if target_col in df.columns:
+            print(f"\n[SKIP] {algo.algo_name} already exists in column '{target_col}'.")
+            cluster_col = target_col
+        else:
+            print(f"\n{'='*50}")
+            print(f"Executing Pipeline for: {algo.algo_name}")
+            print(f"{'='*50}")
 
-        # Generate isolated reports & graphs
-        algo.create_report()
+            if isinstance(algo, KNNGraph):
+                print("[INFO] Building k-NN Graph...")
+                algo.build_graph(tfidf_matrix, unique_texts)
+                
+                print("[INFO] Detecting communities (Graph Mining)...")
+                partition = algo.detect_communities()
+                
+                cluster_col = "graph_community_labels"
+                df[cluster_col] = df['expanded_features'].map(partition)
+                
+                print("[INFO] Generating graph visualization...")
+                algo.visualize_improved()
+            else:
+                # Run standard clustering
+                df, cluster_col = algo.run_pipeline(df, unique_texts, tfidf_matrix)
+                algo.create_report()
 
-        # Persistence (Save progress after each algorithm finishes)
-        if cluster_col and cluster_col in df.columns:
-            print(f"[INFO] Saving updated dataset to {FULLY_PROCESSED_PARQUET}...")
-            df.to_parquet(FULLY_PROCESSED_PARQUET, index=False)
+            # 3. Persistence: Save only if new results were generated
+            if cluster_col and cluster_col in df.columns:
+                print(f"[INFO] Saving updated labels to {FULLY_PROCESSED_PARQUET}...")
+                df.to_parquet(FULLY_PROCESSED_PARQUET, index=False)
 
-    ##########################
-    # Evaluation
-    ##########################
-    if cluster_col:
-        print(f"\n[INFO] Starting Evaluation on {cluster_col}...")
-        eval(df=df, cluster_col=cluster_col, unique_texts=unique_texts, tfidf_matrix=tfidf_matrix, sample_frac=0.01, output_dir=algo.report_dir)
+        ##########################
+        # Evaluation & Comparison Skip Logic
+        ##########################
+        if target_col in df.columns:
+            os.makedirs(report_out, exist_ok=True)
+            
+            # Check for the existence of the specific evaluation report file
+            eval_report_path = os.path.join(report_out, f"evaluation_metrics_{target_col}.txt")
+            
+            if os.path.exists(eval_report_path):
+                print(f"[SKIP] Evaluation for {target_col} already exists at: {eval_report_path}")
+            else:
+                print(f"\n[INFO] Starting Evaluation on {target_col}...")
+                eval(
+                    df=df, 
+                    cluster_col=target_col, 
+                    unique_texts=unique_texts, 
+                    tfidf_matrix=tfidf_matrix, 
+                    sample_frac=0.01, 
+                    output_dir=report_out
+                )
 
 if __name__ == "__main__":
     main()

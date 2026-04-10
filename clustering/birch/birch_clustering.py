@@ -3,9 +3,9 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.cluster import Birch
 from tqdm import tqdm
-from clustering.base_clustering import BaseClusteringAlgorithm
+from interface.base_algorithm import BaseAlgorithm
 
-class BirchClustering(BaseClusteringAlgorithm):
+class BirchClustering(BaseAlgorithm):
     def __init__(self, k=34, threshold=0.9, branching_factor=25, batch_size=1000):
         config_str = f"k{k}_thresh{threshold}_branch{branching_factor}"
 
