@@ -1,0 +1,7 @@
+=== Evaluation Results for spectral_cluster_720 ===
+Total Clusters Evaluated: 580
+
+Top-1 Average  : [np.float64(0.9183), np.float64(0.9292), np.float64(0.9433), np.float64(0.9458), np.float64(0.9197)]
+Top-5 Average  : [np.float64(0.9), np.float64(0.9053), np.float64(0.907), np.float64(0.898), np.float64(0.8609)]
+Top-10 Average : [np.float64(0.851), np.float64(0.8587), np.float64(0.8618), np.float64(0.8531), np.float64(0.8154)]
+Top-all Average: [np.float64(0.3642), np.float64(0.3646), np.float64(0.3619), np.float64(0.3558), np.float64(0.3316)]

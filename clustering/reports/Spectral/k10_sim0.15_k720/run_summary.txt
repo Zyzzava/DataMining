@@ -1,0 +1,27 @@
+Algorithm: Spectral
+Graph Nodes: 84692
+Graph Edges: 643989
+Target Clusters: 720
+
+============================== SPECTRAL COMMUNITY SAMPLES ==============================
+
+[Community 36] (37 Unique Contexts)
+  🎵 I Want It That Way              
+  🎵 Cantus                          
+  🎵 7 Lieder, Op. 62: 7. Vergangen  
+  🎵 Mass in A minor: Credo          
+  🎵 Long Tall Sally                 
+
+[Community 311] (64 Unique Contexts)
+  🎵 Caesar - Diplo Remix            
+  🎵 Dirty Talk                      
+  🎵 Give It To You                  
+  🎵 Titanium (Alesso Remix)         
+  🎵 First Snow (Ooah Remix)         
+
+[Community 566] (249 Unique Contexts)
+  🎵 Like The Sun Out Of Nowhere     
+  🎵 No Regrets                      
+  🎵 Calexico: Crystal Frontier Bus  
+  🎵 Somebody Have Mercy             
+  🎵 Radar Love                      

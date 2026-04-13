@@ -100,7 +100,7 @@ def main():
         BirchClustering(k=55, threshold=0.9, branching_factor=25, batch_size=1000),
         LouvainClustering(graph=graph_builder.G, graph_config_name=graph_config_name),
         # normally optimal k used here, but 322 because louvain is finding 322 
-        SpectralGraphClustering(graph=graph_builder.G, n_clusters=322, graph_config_name=graph_config_name),
+        SpectralGraphClustering(graph=graph_builder.G, n_clusters=720, graph_config_name=graph_config_name),
     ]
 
     for algo in algos:
