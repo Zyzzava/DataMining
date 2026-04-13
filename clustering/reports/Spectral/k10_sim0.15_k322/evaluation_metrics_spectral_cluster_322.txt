@@ -1,0 +1,7 @@
+=== Evaluation Results for spectral_cluster_322 ===
+Total Clusters Evaluated: 272
+
+Top-1 Average  : [np.float64(0.9043), np.float64(0.9041), np.float64(0.9132), np.float64(0.9046), np.float64(0.8983)]
+Top-5 Average  : [np.float64(0.8549), np.float64(0.8649), np.float64(0.8667), np.float64(0.8518), np.float64(0.8095)]
+Top-10 Average : [np.float64(0.7996), np.float64(0.8115), np.float64(0.8061), np.float64(0.7892), np.float64(0.7391)]
+Top-all Average: [np.float64(0.3908), np.float64(0.39), np.float64(0.3859), np.float64(0.3771), np.float64(0.3489)]

@@ -21,6 +21,7 @@ class BirchClustering(BaseAlgorithm):
         self.cluster_labels = None
         self.actual_clusters_found = 0
         self.unique_texts_count = 0
+        self.cluster_col = f'birch_cluster_{self.k}'
 
     def run_pipeline(self, df, unique_texts, tfidf_matrix):
         self.unique_texts_count = len(unique_texts)
@@ -54,10 +55,10 @@ class BirchClustering(BaseAlgorithm):
 
         print(f"Broadcasting labels to {len(df):,} rows...")
         tqdm.pandas(desc="Mapping Clusters")
-        df[f'birch_cluster_{self.k}'] = df['expanded_features'].progress_map(cluster_mapping.get)    
+        df[self.cluster_col] = df['expanded_features'].progress_map(cluster_mapping.get)    
 
-        print(f"Added 'birch_cluster_{self.k}' labels to the DataFrame.")
-        target_col = f'birch_cluster_{self.k}'
+        print(f"Added '{self.cluster_col}' labels to the DataFrame.")
+        target_col = self.cluster_col
         return df, target_col
 
     def create_report(self):

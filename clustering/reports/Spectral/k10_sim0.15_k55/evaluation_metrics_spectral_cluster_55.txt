@@ -1,0 +1,7 @@
+=== Evaluation Results for spectral_cluster_55 ===
+Total Clusters Evaluated: 37
+
+Top-1 Average  : [np.float64(0.9043), np.float64(0.9111), np.float64(0.9199), np.float64(0.9119), np.float64(0.902)]
+Top-5 Average  : [np.float64(0.7988), np.float64(0.8027), np.float64(0.7942), np.float64(0.7873), np.float64(0.749)]
+Top-10 Average : [np.float64(0.7459), np.float64(0.7497), np.float64(0.7358), np.float64(0.7236), np.float64(0.6782)]
+Top-all Average: [np.float64(0.4793), np.float64(0.4796), np.float64(0.4734), np.float64(0.464), np.float64(0.4326)]
