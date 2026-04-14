@@ -86,6 +86,9 @@ def main():
 
     ##########################
     # Build the shared k-NN graph once
+
+    # IMPORTANT REMEMBER THIS FOR THE NOTEBOOK, MOVE AFTER CLUSTERING 
+
     ##########################
     graph_builder = KNNGraph(k_neighbors=10, sim_threshold=0.15)
     print("\n[INFO] Building shared k-NN graph for graph-based clustering...")
