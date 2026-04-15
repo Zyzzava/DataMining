@@ -1,0 +1,7 @@
+=== Evaluation Results for birch_cluster_55 ===
+Total Clusters Evaluated: 51
+
+Top-1 Average  : [np.float64(0.7115), np.float64(0.713), np.float64(0.7469), np.float64(0.7529), np.float64(0.7293)]
+Top-5 Average  : [np.float64(0.643), np.float64(0.6476), np.float64(0.6452), np.float64(0.64), np.float64(0.5937)]
+Top-10 Average : [np.float64(0.5785), np.float64(0.5841), np.float64(0.5849), np.float64(0.5797), np.float64(0.5367)]
+Top-all Average: [np.float64(0.3972), np.float64(0.3959), np.float64(0.3906), np.float64(0.3815), np.float64(0.3491)]

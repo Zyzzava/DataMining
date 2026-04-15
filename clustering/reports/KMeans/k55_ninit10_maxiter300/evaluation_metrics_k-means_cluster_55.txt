@@ -1,0 +1,7 @@
+=== Evaluation Results for k-means_cluster_55 ===
+Total Clusters Evaluated: 55
+
+Top-1 Average  : [np.float64(0.6442), np.float64(0.6539), np.float64(0.6494), np.float64(0.6408), np.float64(0.5921)]
+Top-5 Average  : [np.float64(0.5834), np.float64(0.5886), np.float64(0.5778), np.float64(0.5653), np.float64(0.5117)]
+Top-10 Average : [np.float64(0.5302), np.float64(0.531), np.float64(0.5223), np.float64(0.5072), np.float64(0.4575)]
+Top-all Average: [np.float64(0.3257), np.float64(0.3208), np.float64(0.3098), np.float64(0.2974), np.float64(0.2655)]

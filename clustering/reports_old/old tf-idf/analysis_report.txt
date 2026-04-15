@@ -1,15 +1,15 @@
 TF-IDF MATRIX ANALYSIS REPORT
     =============================
-    Matrix Shape: (84696, 5678)
-    Total Possible Elements: 480,903,888
-    Non-Zero Elements: 4,243,864
-    Matrix Sparsity: 99.1175%
+    Matrix Shape: (100793, 5678)
+    Total Possible Elements: 572,302,654
+    Non-Zero Elements: 4,243,982
+    Matrix Sparsity: 99.2584%
 
     DOCUMENT FREQUENCY (DF) STATS
     -----------------------------
     Mean Document Frequency: 747.4 playlists
     Median Document Frequency: 391.0 playlists
-    Max Document Frequency: 35888 playlists
+    Max Document Frequency: 35873 playlists
 
     MAX_FEATURES RECOMMENDATIONS
     -----------------------------

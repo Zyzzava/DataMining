@@ -77,10 +77,6 @@ def graph_delta_wcss(wcss_delta, k_range, avg_delta, std_delta, threshold, title
 
 def calculate_and_graph_wcss(tfidf_matrix):
     """Calculates and graphs WCSS for optimal k discovery."""
-    if os.path.exists('clustering/kmeans/WCSS') and os.listdir('clustering/kmeans/WCSS'):
-        print("\nWCSS graphs already exist. Skipping WCSS calculation and graphing.")
-        return
-
     print("\nCalculating WCSS to determine optimal number of clusters...")
 
     df_column = 'expanded_features'

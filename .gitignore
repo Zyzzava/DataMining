@@ -4,3 +4,7 @@ spotify_final_healed.parquet
 spotify_fully_processed.parquet
 spotify_fully_processed_backup.parquet
 data/*
+# Ignore saved graph 
+graph/knn/saved_graphs/*
+graph/knn/saved_graphs/knn_k10_sim0.15_N84696.pkl
+graph/knn/saved_graphs/

@@ -1,0 +1,7 @@
+--- BIRCH Clustering Report ---
+Target Clusters (k)  : 55
+Actual Clusters Found: 55
+Threshold            : 0.9
+Branching Factor     : 25
+Batch Size           : 1000
+Total Contexts       : 84,696
