@@ -13,6 +13,7 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 # Clustering algorithm imports
 from clustering.birch.birch_clustering import BirchClustering
 from clustering.kmeans.kmeans_clustering import KMeansClustering
+from clustering.biclustering.spectral_biclustering import BiclusteringAlgorithm
 # from clustering.proclus.proclus_clustering import ProclusClustering # This don't work, do desktop
 
 # Graph import 
@@ -101,6 +102,7 @@ def main():
     algos = [
         KMeansClustering(k=55, max_iter=300, n_init=10, random_state=42),
         BirchClustering(k=55, threshold=0.9, branching_factor=25, batch_size=1000),
+        BiclusteringAlgorithm(n_row_clusters=55, n_column_clusters=10, random_state=42),
         LouvainClustering(graph=graph_builder.G, graph_config_name=graph_config_name),
         # normally optimal k used here, but 322 because louvain is finding 322 
         SpectralGraphClustering(graph=graph_builder.G, n_clusters=720, graph_config_name=graph_config_name),

@@ -1,0 +1,30 @@
+Algorithm: SpectralBiclustering
+Configuration: kRows55_kCols10
+Row Clusters: 55
+Column (Word) Clusters: 10
+Random State: 42
+
+
+============================== ROW CLUSTER SAMPLES ==============================
+
+[Row Cluster 20] (136 Unique Contexts)
+  🎵 Context: March 2015
+  🎵 Context: Fuck to forget February 2015
+  🎵 Context: March 2015. Sent you marching
+  🎵 Context: június 3. 2015 /  Vienna Operahouse - Beethoven Fidelio / Abbado
+  🎵 Context: I Love Myself (2015)
+
+[Row Cluster 37] (177 Unique Contexts)
+  🎵 Context: New 2014
+  🎵 Context: Best albums of 2014
+  🎵 Context: winter 2014 vibez
+  🎵 Context: Summer 2014
+  🎵 Context: Eurovision Song Contest 2014 Copenhagen
+
+[Row Cluster 46] (21,965 Unique Contexts)
+  🎵 Context: HARD ROCK 2010
+  🎵 Context: Starred
+  🎵 Context: No aggregated sadness
+  🎵 Context: One Direction – FOUR (Deluxe)
+  🎵 Context: OneRepublic - Native
+================================================================================
