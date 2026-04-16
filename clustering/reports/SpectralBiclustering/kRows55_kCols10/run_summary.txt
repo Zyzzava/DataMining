@@ -1,0 +1,30 @@
+Algorithm: SpectralBiclustering
+Configuration: kRows55_kCols10
+Row Clusters: 55
+Column (Word) Clusters: 10
+Random State: 42
+
+
+============================== ROW CLUSTER SAMPLES ==============================
+
+[Row Cluster 19] (32 Unique Contexts)
+  🎵 Context: 2010 - 2014
+  🎵 Context: Telugu 2014
+  🎵 Context: Snowbird 2014
+  🎵 Context: canciones del año 2014
+  🎵 Context: 05 18 2014
+
+[Row Cluster 29] (156 Unique Contexts)
+  🎵 Context: Sept 2012
+  🎵 Context: RS Top 50 of 2012
+  🎵 Context: At the Moment - August 2012
+  🎵 Context: At the Moment - November 2012
+  🎵 Context: At the Moment - September 2012
+
+[Row Cluster 39] (22 Unique Contexts)
+  🎵 Context: Caribe Mix 2013
+  🎵 Context: freestyle 2013
+  🎵 Context: Telugu 2013
+  🎵 Context: 2013 tamil favs
+  🎵 Context: Tamil 2013
+================================================================================

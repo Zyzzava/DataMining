@@ -1,0 +1,7 @@
+=== Evaluation Results for bicluster_row_55 ===
+Total Clusters Evaluated: 36
+
+Top-1 Average  : [np.float64(0.3447), np.float64(0.3469), np.float64(0.3535), np.float64(0.3523), np.float64(0.339)]
+Top-5 Average  : [np.float64(0.3733), np.float64(0.3549), np.float64(0.3295), np.float64(0.3089), np.float64(0.2686)]
+Top-10 Average : [np.float64(0.3435), np.float64(0.3223), np.float64(0.2974), np.float64(0.2748), np.float64(0.2351)]
+Top-all Average: [np.float64(0.1903), np.float64(0.1742), np.float64(0.1596), np.float64(0.1477), np.float64(0.1281)]
