@@ -5,23 +5,23 @@ Target Clusters: 720
 
 ============================== SPECTRAL COMMUNITY SAMPLES ==============================
 
-[Community 408] (181 Unique Contexts)
-  🎵 Paleta                          
-  🎵 Let Me Feel - Fedde Le Grand R  
-  🎵 Put a Light On                  
-  🎵 Veiled In Darkness (feat. Matt  
-  🎵 Sei Lob und Preis mit Ehren, B  
+[Community 428] (137 Unique Contexts)
+  🎵 Moment Like You                 
+  🎵 Faded                           
+  🎵 Book of Love                    
+  🎵 One Week                        
+  🎵 Broken English                  
 
-[Community 524] (160 Unique Contexts)
-  🎵 Just Like A Woman               
-  🎵 Old Fashioned                   
-  🎵 I Need You To Hold My Hand      
-  🎵 You Gonna Make Me Love Somebod  
-  🎵 Trust In Me                     
+[Community 438] (120 Unique Contexts)
+  🎵 Insomnia Hour:One DJ Mashup Mi  
+  🎵 Spanish Guitar, Guadalajara     
+  🎵 Brokedown Palace [Live In Spri  
+  🎵 Bloody Mary (Nerve Endings)     
+  🎵 Follow Through                  
 
-[Community 681] (328 Unique Contexts)
-  🎵 Gas Face - Japanese Popstars R  
-  🎵 Mony Mony - 2001 - Remaster     
-  🎵 Guitar Man                      
-  🎵 G.U.Y.                          
-  🎵 11:30 (Data Remix)              
+[Community 555] (141 Unique Contexts)
+  🎵 Magic Feet - Edge Of Motion Mi  
+  🎵 11 - Nobody's Listening         
+  🎵 In Between (Album Version)      
+  🎵 Back To Tha 'O' School          
+  🎵 LOST IN THE ECHO - Acapella     
