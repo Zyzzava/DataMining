@@ -8,13 +8,14 @@ from interface.base_algorithm import BaseAlgorithm
 
 
 class LouvainClustering(BaseAlgorithm):
-    def __init__(self, graph, graph_config_name="default"):
+    def __init__(self, graph, graph_config_name="default", random_state=42):
         super().__init__(algo_name="Louvain", config_name=graph_config_name)
 
         self.graph = graph
-        self.cluster_col = "louvain_community_labels"
         self.partition = None
         self.sanity_check_text = ""
+        self.random_state = random_state
+        self.cluster_col = f"{self.algo_name.lower()}_community_labels_{self.random_state}"  # consists of specific parameters
 
     def run_pipeline(self, df, unique_texts, tfidf_matrix):
         print(f"\nRunning Louvain community detection on {self.graph.number_of_nodes():,} graph nodes...")
@@ -30,7 +31,7 @@ class LouvainClustering(BaseAlgorithm):
         try:
             import community as community_louvain
 
-            return community_louvain.best_partition(self.graph)
+            return community_louvain.best_partition(self.graph, random_state=self.random_state)
         except ImportError:
             print("Error: 'python-louvain' not installed. Falling back to dummy partition.")
         except Exception as exc:
@@ -44,6 +45,7 @@ class LouvainClustering(BaseAlgorithm):
 
         n_samples = min(3, len(valid_communities))
         if n_samples > 0:
+            np.random.seed(self.random_state)
             sampled_ids = np.random.choice(valid_communities, n_samples, replace=False)
             for c_id in sorted(sampled_ids):
                 comm_df = df[df[self.cluster_col] == c_id]

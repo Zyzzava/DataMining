@@ -1,0 +1,7 @@
+=== Evaluation Results for louvain_community_labels_42 ===
+Total Clusters Evaluated: 324
+
+Top-1 Average  : [np.float64(0.9043), np.float64(0.9081), np.float64(0.9251), np.float64(0.9206), np.float64(0.903)]
+Top-5 Average  : [np.float64(0.7944), np.float64(0.8036), np.float64(0.8133), np.float64(0.8061), np.float64(0.7606)]
+Top-10 Average : [np.float64(0.7451), np.float64(0.754), np.float64(0.7577), np.float64(0.7488), np.float64(0.7057)]
+Top-all Average: [np.float64(0.358), np.float64(0.3576), np.float64(0.3537), np.float64(0.3462), np.float64(0.3195)]
