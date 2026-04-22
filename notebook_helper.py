@@ -1,5 +1,6 @@
 from evaluation.evaluator import eval
 import os
+import pickle
 
 def execution_pipeline(algo, df, unique_texts, tfidf_matrix):
     algo_name = algo.algo_name
@@ -47,3 +48,25 @@ def evaluation_pipeline(algo, df, unique_texts, tfidf_matrix):
                 sample_frac=0.1,
                 output_dir=algo_report_out)
     return algo_report_out
+
+def build_graph(graph_builder, unique_texts, tfidf_matrix):
+    graph_config_name = f"k{graph_builder.k}_sim{graph_builder.sim_threshold}_N{len(unique_texts)}"
+
+    graph_save_dir = os.path.join("graph", "knn", "saved_graphs")
+    os.makedirs(graph_save_dir, exist_ok=True)
+
+    graph_save_path = os.path.join(graph_save_dir, f"knn_{graph_config_name}.pkl")
+
+    if os.path.exists(graph_save_path):
+        print(f"\n[INFO] Loading previously built k-NN graph from {graph_save_path}...")
+        with open(graph_save_path, "rb") as f:
+            graph_builder.G = pickle.load(f)
+    else:
+        print("\n[INFO] Building shared k-NN graph for graph-based clustering...")
+        graph_builder.build_graph(tfidf_matrix, unique_texts)
+        
+        print(f"[INFO] Saving generated k-NN graph to {graph_save_path}...")
+        with open(graph_save_path, "wb") as f:
+            pickle.dump(graph_builder.G, f)
+    
+    return graph_config_name

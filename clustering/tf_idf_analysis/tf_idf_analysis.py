@@ -16,6 +16,12 @@ os.makedirs(OUTPUT_DIR, exist_ok=True)
 """
 This module provides a comprehensive analysis of the TF-IDF matrix derived from the contextual features of playlists"""
 def load_tfidf_matrix(tfidf_cache_dir, df, TfidfVectorizer):
+    # Init initalization
+    tfidf_matrix = None
+    unique_texts = None
+    vectorizer = None
+
+    # Safety check: Ensure the cache directory exists
     os.makedirs(tfidf_cache_dir, exist_ok=True)
 
     # Define file paths for the cached objects
@@ -67,6 +73,8 @@ def load_tfidf_matrix(tfidf_cache_dir, df, TfidfVectorizer):
             
         with open(vectorizer_path, 'wb') as f:
             pickle.dump(vectorizer, f)
+            
+    return tfidf_matrix, unique_texts, vectorizer
 
 
 def plot_wordcloud(tfidf_matrix, vectorizer):
