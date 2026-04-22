@@ -1,7 +1,38 @@
+import glob
 import os
 from sklearn.cluster import KMeans
 from tqdm import tqdm
 import numpy as np
+
+def load_wcss_results(wcss_dir, tf_idf_matrix):
+    os.makedirs(wcss_dir, exist_ok=True)
+
+    # Search for any file ending in .png in the directory
+    wcss_pngs = glob.glob(os.path.join(wcss_dir, "*.png"))
+
+    optimal_k = 55 # FALLBACK 
+    optimal_k_file = os.path.join(wcss_dir, "optimal_k.txt")
+
+    if not wcss_pngs:
+        # Run the heavy calculation
+        calculated_k = calculate_and_graph_wcss(tfidf_matrix=tf_idf_matrix)
+        
+        if calculated_k:
+            optimal_k = calculated_k
+            # Save this number to a text file so we remember it for the next run!
+            with open(optimal_k_file, "w") as f:
+                f.write(str(optimal_k))
+    else:
+        print(f"WCSS graphs already exist in '{wcss_dir}'. Skipping heavy calculation.\n")
+            
+        # Try to load the previously saved optimal K
+        if os.path.exists(optimal_k_file):
+            with open(optimal_k_file, "r") as f:
+                optimal_k = int(f.read().strip())
+            print(f"\nLoaded previously calculated optimal K: {optimal_k}")
+        else:
+            print(f"\nNo saved K value found. Defaulting to K={optimal_k}")
+    return optimal_k, wcss_pngs
 
 def calculate_wcss(df_column, tfidf_matrix, sample_frac=0.05):
     print(f"Calculating WCSS for matrix of shape: {tfidf_matrix.shape}")
