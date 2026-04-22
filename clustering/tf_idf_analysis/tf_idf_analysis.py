@@ -2,13 +2,72 @@ import os
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+import scipy
+import pickle
 import seaborn as sns
+import scipy.sparse
 from scipy.sparse import issparse
 from wordcloud import WordCloud
 
 # Create directory for saving plots
 OUTPUT_DIR = "clustering/tf_idf_analysis"
 os.makedirs(OUTPUT_DIR, exist_ok=True)
+
+"""
+This module provides a comprehensive analysis of the TF-IDF matrix derived from the contextual features of playlists"""
+def load_tfidf_matrix(tfidf_cache_dir, df, TfidfVectorizer):
+    os.makedirs(tfidf_cache_dir, exist_ok=True)
+
+    # Define file paths for the cached objects
+    matrix_path = os.path.join(tfidf_cache_dir, "cleaned_tfidf_matrix.npz")
+    texts_path = os.path.join(tfidf_cache_dir, "cleaned_unique_texts.pkl")
+    vectorizer_path = os.path.join(tfidf_cache_dir, "vectorizer.pkl")
+
+    # Check if all cached files exist
+    if os.path.exists(matrix_path) and os.path.exists(texts_path) and os.path.exists(vectorizer_path):
+        print("[INFO] Loading cached, cleaned TF-IDF matrix and unique texts...")
+        tfidf_matrix = scipy.sparse.load_npz(matrix_path)
+        
+        with open(texts_path, 'rb') as f:
+            unique_texts = pickle.load(f)
+            
+        with open(vectorizer_path, 'rb') as f:
+            vectorizer = pickle.load(f)
+            
+        print(f"[INFO] Loaded TF-IDF matrix shape: {tfidf_matrix.shape}")
+
+    else:
+        print("[INFO] No cache found. Extracting unique contextual features for TF-IDF matrix...")
+        contextual_mask = df['is_contextual'] == True
+        unique_texts = df[contextual_mask]['expanded_features'].dropna().unique()
+        
+        print(f"[INFO] Creating TF-IDF matrix for {len(unique_texts):,} unique contexts...")
+        # Notice 5678 features maintaining ~80% of the information.
+        vectorizer = TfidfVectorizer(min_df=5, max_df=0.95, max_features=5678)
+        tfidf_matrix = vectorizer.fit_transform(unique_texts)
+
+        # --- Noise Filtering Block ---
+        row_sums = np.squeeze(np.asarray(tfidf_matrix.sum(axis=1)))
+        non_empty_mask = row_sums > 0
+        
+        dropped_count = len(unique_texts) - non_empty_mask.sum()
+        if dropped_count > 0:
+            print(f"[WARNING] Dropping {dropped_count:,} contexts that became empty after TF-IDF filtering (Noise).")
+        
+        # Apply the filter
+        unique_texts = unique_texts[non_empty_mask]
+        tfidf_matrix = tfidf_matrix[non_empty_mask]
+        
+        # --- Save to Cache ---
+        print(f"[INFO] Saving cleaned TF-IDF matrix and objects to '{tfidf_cache_dir}'...")
+        scipy.sparse.save_npz(matrix_path, tfidf_matrix)
+        
+        with open(texts_path, 'wb') as f:
+            pickle.dump(unique_texts, f)
+            
+        with open(vectorizer_path, 'wb') as f:
+            pickle.dump(vectorizer, f)
+
 
 def plot_wordcloud(tfidf_matrix, vectorizer):
     print("Generating WordCloud...")
