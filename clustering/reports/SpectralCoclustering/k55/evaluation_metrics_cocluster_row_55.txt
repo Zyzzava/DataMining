@@ -1,7 +1,0 @@
-=== Evaluation Results for cocluster_row_55 ===
-Total Clusters Evaluated: 33
-
-Top-1 Average  : [np.float64(0.2513), np.float64(0.2563), np.float64(0.2546), np.float64(0.2466), np.float64(0.2263)]
-Top-5 Average  : [np.float64(0.2695), np.float64(0.2535), np.float64(0.233), np.float64(0.2169), np.float64(0.1935)]
-Top-10 Average : [np.float64(0.2421), np.float64(0.2259), np.float64(0.2097), np.float64(0.1966), np.float64(0.1763)]
-Top-all Average: [np.float64(0.1405), np.float64(0.1272), np.float64(0.1159), np.float64(0.1079), np.float64(0.0961)]

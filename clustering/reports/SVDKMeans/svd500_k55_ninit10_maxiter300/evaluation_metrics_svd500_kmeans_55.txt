@@ -1,0 +1,7 @@
+=== Evaluation Results for svd500_kmeans_55 ===
+Total Clusters Evaluated: 55
+
+Top-1 Average  : [np.float64(0.6688), np.float64(0.6816), np.float64(0.6833), np.float64(0.674), np.float64(0.6331)]
+Top-5 Average  : [np.float64(0.6216), np.float64(0.6219), np.float64(0.614), np.float64(0.5998), np.float64(0.5474)]
+Top-10 Average : [np.float64(0.5746), np.float64(0.5757), np.float64(0.5683), np.float64(0.5537), np.float64(0.5011)]
+Top-all Average: [np.float64(0.3357), np.float64(0.3307), np.float64(0.3213), np.float64(0.3106), np.float64(0.2792)]
