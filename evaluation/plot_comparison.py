@@ -11,6 +11,10 @@ def plot_f01_comparison(p_values, kmeans_scores, title_prefix, save_path=None):
     
     plt.xlabel('p (Fraction of hidden test set)')
     plt.ylabel('F0.1 Score')
+
+    # Have it run between 0 and 1
+    plt.ylim(0, 1)
+
     plt.title(f'Performance Comparison: Context-Aware Music Recommendation ({title_prefix})')
     plt.tight_layout()
     plt.xticks(p_values)
