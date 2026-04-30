@@ -9,6 +9,7 @@ class KNNGraph:
         self.k = k_neighbors
         self.sim_threshold = sim_threshold
         self.G = nx.Graph()
+        self.DiG = nx.DiGraph()
 
     def build_graph(self, tfidf_matrix, labels):
         self.G.clear()
@@ -29,6 +30,26 @@ class KNNGraph:
                         self.G.add_edge(labels[i], labels[j], weight=float(sim_weight))
 
         return self.G
+    
+    def build_directed_graph(self, tfidf_matrix, labels):
+        self.DiG.clear()
+
+        if len(labels) < 2:
+            return self.DiG
+
+        n_neighbors = min(self.k, len(labels))
+        nn = NearestNeighbors(n_neighbors=n_neighbors, metric="cosine", n_jobs=-1)
+        nn.fit(tfidf_matrix)
+        distances, indices = nn.kneighbors(tfidf_matrix)
+
+        for i, neighbors_idx in tqdm(enumerate(indices), total=len(indices), desc="Creating Directed Graph Edges"):
+            for local_idx, j in enumerate(neighbors_idx):
+                if i != j:
+                    sim_weight = 1 - distances[i][local_idx]
+                    if sim_weight > self.sim_threshold:
+                        self.DiG.add_edge(labels[i], labels[j], weight=float(sim_weight))
+
+        return self.DiG
 
     def visualize_improved(self, partition=None, save_path=None):
         if self.G.number_of_nodes() == 0:

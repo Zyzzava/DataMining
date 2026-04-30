@@ -70,3 +70,27 @@ def build_graph(graph_builder, unique_texts, tfidf_matrix):
             pickle.dump(graph_builder.G, f)
     
     return graph_config_name
+
+def build_digraph(digraph_builder, unique_texts, tfidf_matrix):
+    digraph_config_name = f"k{digraph_builder.k}_sim{digraph_builder.sim_threshold}_N{len(unique_texts)}"
+
+    digraph_save_dir = os.path.join("graph", "knn", "saved_graphs")
+    os.makedirs(digraph_save_dir, exist_ok=True)
+
+    digraph_save_path = os.path.join(digraph_save_dir, f"digraph_{digraph_config_name}.pkl")
+
+    if os.path.exists(digraph_save_path):
+        print(f"\n[INFO] Loading previously built directed k-NN graph from {digraph_save_path}...")
+        with open(digraph_save_path, "rb") as f:
+            digraph_builder.DiG = pickle.load(f)
+    else:
+        print("\n[INFO] Building shared directed k-NN graph for graph-based clustering...")
+        
+        # FIX: Explicitly call the directed graph builder function
+        digraph_builder.build_directed_graph(tfidf_matrix, unique_texts)
+        
+        print(f"[INFO] Saving generated directed k-NN graph to {digraph_save_path}...")
+        with open(digraph_save_path, "wb") as f:
+            pickle.dump(digraph_builder.DiG, f)
+    
+    return digraph_config_name
