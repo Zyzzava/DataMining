@@ -72,7 +72,7 @@ def build_graph(graph_builder, unique_texts, tfidf_matrix):
     return graph_config_name
 
 def build_digraph(digraph_builder, unique_texts, tfidf_matrix):
-    digraph_config_name = f"k{digraph_builder.k}_sim{digraph_builder.sim_threshold}_N{len(unique_texts)}"
+    digraph_config_name = f"k{digraph_builder.k}_sim{digraph_builder.sim_threshold}_N{len(unique_texts)}_mknn"
 
     digraph_save_dir = os.path.join("graph", "knn", "saved_graphs")
     os.makedirs(digraph_save_dir, exist_ok=True)
