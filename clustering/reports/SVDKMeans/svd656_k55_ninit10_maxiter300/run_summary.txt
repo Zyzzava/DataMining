@@ -1,0 +1,30 @@
+Algorithm: SVDKMeans
+Configuration: svd656_k55_ninit10_maxiter300
+Total Contexts Clustered: 84,696
+SVD Components: 656
+SVD Explained Variance: 79.87%
+K-Means Clusters (k): 55
+
+============================== HIGH-VARIETY CLUSTER SAMPLES (SVD+KMEANS) ==============================
+
+[Cluster 26] (3,189 Unique Contexts)
+  🎵 Raining Diamonds (AK Mak Remix   | Contexts: Party Playlist - Updates every week!
+  🎵 Requiem In D Minor, K.626 - Co   | Contexts: Various Artists – 111 Years of Deutsche Grammophon
+  🎵 Breath                           | Contexts: Commute, Summer '14, Soundtrack to my life (main)
+  🎵 Mission Statement                | Contexts: Soundtrack to my life (main)
+  🎵 Tell All Your Friends            | Contexts: 13 summers
+
+[Cluster 29] (879 Unique Contexts)
+  🎵 Never Wanna Know                 | Contexts: in the pines new things
+  🎵 Syriana                          | Contexts: New Prog
+  🎵 Ethnicolor 1                     | Contexts: new age
+  🎵 Heiress of Valentina - Alesso    | Contexts: New Techno
+  🎵 July Jones                       | Contexts: The New Pornographers, The New Pornographers – Electric Version
+
+[Cluster 36] (423 Unique Contexts)
+  🎵 Kierling _ Doubt                 | Contexts: Postmodern & Minimalist
+  🎵 Maria Elena                      | Contexts: Various Artists – Besame Mucho
+  🎵 Eine neue Liebe ist wie ein ne   | Contexts: Various Artists – Wunschkonzert Schlager
+  🎵 White Noise                      | Contexts: Various Artists - EDM, Various Artists – EDM
+  🎵 Stop! I Like It                  | Contexts: Various Artists – Rockabilly Insanity
+==================================================================================================
