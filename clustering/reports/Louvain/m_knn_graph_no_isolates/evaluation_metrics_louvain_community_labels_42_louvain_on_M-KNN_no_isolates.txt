@@ -1,0 +1,7 @@
+=== Evaluation Results for louvain_community_labels_42_louvain_on_M-KNN_no_isolates ===
+Total Clusters Evaluated: 146
+
+Top-1 Average  : [np.float64(0.9712), np.float64(0.9712), np.float64(0.9902), np.float64(0.9902), np.float64(1.0)]
+Top-5 Average  : [np.float64(0.9649), np.float64(0.9652), np.float64(0.9855), np.float64(0.9866), np.float64(0.9912)]
+Top-10 Average : [np.float64(0.961), np.float64(0.9615), np.float64(0.983), np.float64(0.9842), np.float64(0.9825)]
+Top-all Average: [np.float64(0.5363), np.float64(0.5398), np.float64(0.5436), np.float64(0.5376), np.float64(0.5154)]
