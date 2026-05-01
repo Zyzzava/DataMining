@@ -1,0 +1,30 @@
+Algorithm: SVDKMeans
+Configuration: svd1114_k55_ninit10_maxiter300
+Total Contexts Clustered: 84,696
+SVD Components: 1114
+SVD Explained Variance: 89.92%
+K-Means Clusters (k): 55
+
+============================== HIGH-VARIETY CLUSTER SAMPLES (SVD+KMEANS) ==============================
+
+[Cluster 1] (377 Unique Contexts)
+  🎵 Devil Music                      | Contexts: Retired 'Stars'
+  🎵 STAR TREK - VOYAGER              | Contexts: Various Artists – The Star Trek Album
+  🎵 Younger - Kygo Remix             | Contexts: A Sky Full Of Stars
+  🎵 This Head I Hold                 | Contexts: Retired 'Stars'
+  🎵 Highway to Hell - (Tribute to    | Contexts: ESTUDIO ALL STAR dance
+
+[Cluster 6] (339 Unique Contexts)
+  🎵 When Love Takes Over 2K12 - Pe   | Contexts: Various Artists – #1 Club Hits 2012 - Best of Dance, House, Electro & Techno
+  🎵 Bromance - Avicii's Arena Mix    | Contexts: Club or House or just Real Awesome Music!
+  🎵 All                              | Contexts: Konami Kukeiha Club – Silent Hill (Original Game Soundtracks)
+  🎵 Joy - Club Mix 7'' Edit          | Contexts: Soul II Soul – The Club Mix Hits
+  🎵 Born Slippy Nuxx (Nuxx Mix)      | Contexts: Club Scene
+
+[Cluster 28] (567 Unique Contexts)
+  🎵 23:55: Alles auf Anfang          | Contexts: Running Streatham!
+  🎵 Promises                         | Contexts: Running, Morning Run, Ministry Running, Run and Tell That (+7 more)
+  🎵 I Am - Radio Edit                | Contexts: Running
+  🎵 What Your Soul Sings             | Contexts: running film
+  🎵 You Can't Sit Down               | Contexts: Running Time
+==================================================================================================

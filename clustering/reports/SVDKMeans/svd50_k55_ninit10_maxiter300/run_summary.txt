@@ -1,0 +1,30 @@
+Algorithm: SVDKMeans
+Configuration: svd50_k55_ninit10_maxiter300
+Total Contexts Clustered: 84,696
+SVD Components: 50
+SVD Explained Variance: 26.05%
+K-Means Clusters (k): 55
+
+============================== HIGH-VARIETY CLUSTER SAMPLES (SVD+KMEANS) ==============================
+
+[Cluster 8] (2,861 Unique Contexts)
+  🎵 Under African Skies              | Contexts: Jazz
+  🎵 Forgetful                        | Contexts: jazz
+  🎵 Uncanny                          | Contexts: Love Love Love
+  🎵 Twilight                         | Contexts: Jazz, The Blood Is Love, Laying on a bed, Solo de jazz (+1 more)
+  🎵 Drum Conversation                | Contexts: good ole jazz, Jazz Chronology, Jazz, JAZZ
+
+[Cluster 25] (755 Unique Contexts)
+  🎵 Me Duele La Cara De Ser Tan Gu   | Contexts: Pop Español
+  🎵 X-men                            | Contexts: • Punk Goes Pop
+  🎵 A Thing of the Past              | Contexts: Not Just "Girl Groups" (20th Century R&B and Pop Classics)
+  🎵 At the Night Dies                | Contexts: Indie Pop (Pure)
+  🎵 Longer - Live from Sony Pictur   | Contexts: Pop / R&B / Mainstream
+
+[Cluster 31] (540 Unique Contexts)
+  🎵 Hamsterdance Song                | Contexts: Liked from Radio
+  🎵 Know You                         | Contexts: Liked from Radio, Radio Hannibal Top 50 Albums of 2013, Radio Hannibal's Albums of 2013
+  🎵 Scene One - James Dean & Audre   | Contexts: Liked from Radio
+  🎵 Motivos De Un Sentimiento (Ver   | Contexts: Liked from Radio
+  🎵 That Glow                        | Contexts: Radio Hannibal's Albums of 2014
+==================================================================================================

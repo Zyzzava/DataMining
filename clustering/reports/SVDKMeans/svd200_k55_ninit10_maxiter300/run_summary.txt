@@ -1,0 +1,30 @@
+Algorithm: SVDKMeans
+Configuration: svd200_k55_ninit10_maxiter300
+Total Contexts Clustered: 84,696
+SVD Components: 200
+SVD Explained Variance: 52.60%
+K-Means Clusters (k): 55
+
+============================== HIGH-VARIETY CLUSTER SAMPLES (SVD+KMEANS) ==============================
+
+[Cluster 5] (1,547 Unique Contexts)
+  🎵 Like A Ritual                    | Contexts: Choke on a dick
+  🎵 Love Will Remember               | Contexts: Fall Swaggy
+  🎵 Who Says                         | Contexts: FALL baq lyke WHOA, Going to California
+  🎵 No One Sleeps When I’m Awake     | Contexts: Falling Leaves 2009
+  🎵 Alibi                            | Contexts: Fear of Falling by S.L. Jennings, FALLING, FALL INTO IT, Liste der Listen 2014 - die besten Alben des Jahres
+
+[Cluster 8] (756 Unique Contexts)
+  🎵 Woodpecker                       | Contexts: Blues
+  🎵 Standing On The Verge Of Getti   | Contexts: funk soul blues etc lite
+  🎵 OctaHate                         | Contexts: Summer Blues
+  🎵 Back On The Streets - 2002 Dig   | Contexts: Gary Moore – Ballads & Blues 1982-1994
+  🎵 You’re Blessed                   | Contexts: winter blues (december 12)
+
+[Cluster 26] (926 Unique Contexts)
+  🎵 Sifón                            | Contexts: Sabor De Gracia – La Cançó Amb Rumba
+  🎵 Orchid Dreaming                  | Contexts: Punto de la Aurora
+  🎵 Drift And Die                    | Contexts: Favoritas de la radio
+  🎵 Giant Tortoise                   | Contexts: Favoritas de la radio
+  🎵 Three Girl Rhumba                | Contexts: Favoritas de la radio
+==================================================================================================
