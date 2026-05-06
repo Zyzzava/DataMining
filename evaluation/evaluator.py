@@ -11,7 +11,7 @@ from tqdm import tqdm
 from evaluation.plot_comparison import plot_cluster_distribution, plot_f01_comparison
 from evaluation.silhouette import evaluate_silhouette
 
-def eval(df, cluster_col, unique_texts, tfidf_matrix, sample_frac=0.1, output_dir="evaluation/reports"):    
+def eval(df, cluster_col, unique_texts, tfidf_matrix, sample_frac=0.1, output_dir="evaluation/reports", rule_generator=None):    
     """
     Evaluates the clustering performance and saves results to the algorithm's specific folder.
     """
@@ -64,11 +64,36 @@ def eval(df, cluster_col, unique_texts, tfidf_matrix, sample_frac=0.1, output_di
             for track in tracks:
                 track_to_users_index[track].add(user)
 
+        ### Rule gen PART 3 ### 
+        if rule_generator is not None:
+            print(f"  -> Mining association rules for cluster {current_cluster_id}...")
+            rule_generator.mine_rules(train_dict, current_cluster_id)
+
         current_cluster_scores = {p: [] for p in p_values} 
         print(f"  -> Generating recommendations & evaluating {len(target_users)} sampled users...")        
         # run recommendations and evaluations for each user in the test set
         for target_user in tqdm(target_users, desc="Evaluating users", leave=False):
-            ranked_predictions = get_recommendations(target_user, train_dict, track_to_users_index)
+            # get standard CF recommendations
+            cf_predictions = get_recommendations(target_user, train_dict, track_to_users_index)
+
+            ### Rule gen PART 3 ### 
+            if rule_generator is not None:
+                # "visible" tracks are the train dict
+                seed_tracks = train_dict[target_user]
+
+                # get high-confidence predictions from our rules
+                rule_predictions = rule_generator.predict(seed_tracks, current_cluster_id) 
+
+                # Merge them, rules first then pad with CF
+                ranked_predictions = []
+                seed_set = set(seed_tracks)
+
+                for track in rule_predictions + cf_predictions:
+                    if track not in seed_set and track not in ranked_predictions:
+                        ranked_predictions.append(track)
+            else:
+                # backwards comp
+                ranked_predictions = cf_predictions
             
             #for each p, evaluate the metrics and store metrics for this user
             #metrics include precision, recall, and f-score at the specified p-value
