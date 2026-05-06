@@ -94,3 +94,85 @@ def build_digraph(digraph_builder, unique_texts, tfidf_matrix):
             pickle.dump(digraph_builder.DiG, f)
     
     return digraph_config_name
+
+import re
+import pandas as pd
+import numpy as np
+
+def parse_eval_file(filepath):
+    """Parses the Top-K list format, accounting for non-breaking spaces and numpy types."""
+    data = {}
+    # \s+ handles standard spaces, tabs, and non-breaking spaces (\xa0)
+    # This looks for "Top-X Average", optional whitespace, a colon, and the bracketed list
+    pattern = re.compile(r"(Top-\w+)\s+Average\s*:\s*\[(.*?)\]", re.DOTALL)
+    
+    with open(filepath, 'r') as f:
+        content = f.read()
+        matches = pattern.findall(content)
+        
+        for label, values_str in matches:
+            # 1. Remove "np.float64(" and ")"
+            clean_str = values_str.replace("np.float64(", "").replace(")", "")
+            # 2. Split by comma and convert to float
+            try:
+                values = [float(v.strip()) for v in clean_str.split(',') if v.strip()]
+                data[label] = values
+            except ValueError as e:
+                print(f"Error parsing values for {label}: {e}")
+                
+    return data
+
+def compare_results(pure_cf_path, hybrid_path):
+    # Load raw data from files
+    pure_cf = parse_eval_file(pure_cf_path)
+    hybrid = parse_eval_file(hybrid_path)
+    
+    p_values = [0.1, 0.3, 0.5, 0.7, 1.0] #
+    rows = []
+
+    # 1. Build the raw rows
+    for category in ['Top-1', 'Top-5', 'Top-10', 'Top-all']:
+        cf_vals = pure_cf.get(category, [0]*5)
+        hy_vals = hybrid.get(category, [0]*5)
+        
+        for i, p in enumerate(p_values):
+            diff = hy_vals[i] - cf_vals[i]
+            rows.append({
+                "Metric Depth (p)": p,
+                "Category": category,
+                "Pure CF": cf_vals[i],
+                "Hybrid (Rules+CF)": hy_vals[i],
+                "Delta": diff
+            })
+
+    # 2. Create DataFrame
+    df_compare = pd.DataFrame(rows)
+    
+    df_compare['Metric Depth (p)'] = df_compare['Metric Depth (p)'].map(lambda x: f"{x:.1f}")
+    
+    # Pivot for a nicer "Paper-style" view
+    pivot_df = df_compare.pivot(
+        index="Category", 
+        columns="Metric Depth (p)", 
+        values=["Pure CF", "Hybrid (Rules+CF)", "Delta"]
+    )
+    
+    # 3. Reindex to ensure logical order (Top-1 to Top-all)
+    logical_order = ['Top-1', 'Top-5', 'Top-10', 'Top-all']
+    pivot_df = pivot_df.reindex(logical_order)
+
+    # 4. Define Formatting Function
+    def color_delta(val):
+        """Colors positive values green and negative values red."""
+        color = '#2ecc71' if val > 0 else '#e74c3c' if val < 0 else 'black'
+        return f'color: {color}; font-weight: bold'
+
+    # 5. Apply Styling (Note: mapping the color_delta to Delta columns)
+    styled_df = pivot_df.style.format(precision=4) \
+        .map(color_delta, subset=['Delta']) \
+        .set_table_styles([
+            {'selector': 'th', 'props': [('background-color', '#2c3e50'), ('color', 'white'), ('text-align', 'center')]},
+            {'selector': 'td', 'props': [('text-align', 'center')]}
+        ])
+
+    return pivot_df, styled_df
