@@ -15,6 +15,7 @@ def eval(df, cluster_col, unique_texts, tfidf_matrix, sample_frac=0.1, output_di
     """
     Evaluates the clustering performance and saves results to the algorithm's specific folder.
     """
+    os.makedirs(output_dir, exist_ok=True)
     print(f"Saving evaluation results to: {output_dir}/")
 
     # Set random seed for reproducibility
@@ -78,19 +79,17 @@ def eval(df, cluster_col, unique_texts, tfidf_matrix, sample_frac=0.1, output_di
 
             ### Rule gen PART 3 ### 
             if rule_generator is not None:
-                # "visible" tracks are the train dict
-                seed_tracks = train_dict[target_user]
-
-                # get high-confidence predictions from our rules
-                rule_predictions = rule_generator.predict(seed_tracks, current_cluster_id) 
-
-                # Merge them, rules first then pad with CF
+                seed_tracks = train_dict[target_user] 
+                rule_predictions = rule_generator.predict(seed_tracks, current_cluster_id)
+                
                 ranked_predictions = []
-                seed_set = set(seed_tracks)
-
+                # Use set fast lookups
+                seen_tracks = set(seed_tracks) 
+                
                 for track in rule_predictions + cf_predictions:
-                    if track not in seed_set and track not in ranked_predictions:
+                    if track not in seen_tracks:
                         ranked_predictions.append(track)
+                        seen_tracks.add(track) # Add it to the set so we never add it twice!
             else:
                 # backwards comp
                 ranked_predictions = cf_predictions
