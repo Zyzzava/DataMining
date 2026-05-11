@@ -10,8 +10,9 @@ from collections import defaultdict
 from tqdm import tqdm
 from evaluation.plot_comparison import plot_cluster_distribution, plot_f01_comparison
 from evaluation.silhouette import evaluate_silhouette
+from evaluation.part3_helper import init_trace_tracker, update_trace, log_trace_results
 
-def eval(df, cluster_col, unique_texts, tfidf_matrix, sample_frac=0.1, output_dir="evaluation/reports", rule_generator=None, refine_results=False):    
+def eval(df, cluster_col, unique_texts, tfidf_matrix, output_dir="evaluation/reports", rule_generator=None, refine_results=False):    
     """
     Evaluates the clustering performance and saves results to the algorithm's specific folder.
     """
@@ -43,6 +44,9 @@ def eval(df, cluster_col, unique_texts, tfidf_matrix, sample_frac=0.1, output_di
 
         # transform and split
         train_dict, test_dict = create_train_test_dict(cluster_data)
+
+        # Initialize trace for this cluster
+        trace_tracker = init_trace_tracker()
         
         # sub-sample the test users with floor ceiling subsampling
         all_test_users = list(test_dict.keys())
@@ -76,44 +80,25 @@ def eval(df, cluster_col, unique_texts, tfidf_matrix, sample_frac=0.1, output_di
         for target_user in tqdm(target_users, desc="Evaluating users", leave=False):
             # get standard CF recommendations
             cf_predictions = get_recommendations(target_user, train_dict, track_to_users_index)
+            seed_tracks = train_dict[target_user] 
 
             ### Rule gen PART 3 ### 
+            rule_predictions = []
             if rule_generator is not None:
-                seed_tracks = train_dict[target_user] 
-
                 if not refine_results:
                     rule_predictions = rule_generator.predict(seed_tracks, current_cluster_id)
-                
                 else: 
+                    # Note: We use the largest P to determine the pool, or evaluate per P
+                    # To keep the trace accurate to the "best" rules:
+                    unique_items_in_cluster = cluster_data['trackname'].unique()
+                    # We'll use the 1.0 p-value for the 'pool' trace, or the max budget
+                    total_slots = max(1, int(len(unique_items_in_cluster) * 1.0))
+                    dynamic_max_rules = max(1, int(total_slots * 0.20))
+                    
                     rule_metadata = rule_generator.predict_with_metadata(seed_tracks, current_cluster_id)
-                    for p in p_values:
-                        # 1. Identify unique items in the cluster using your specific columns
-                        # We use trackname as the item identifier here
-                        unique_items_in_cluster = cluster_data['trackname'].unique()
-                        
-                        # 2. Calculate the total recommendation depth for this p-value
-                        total_slots = max(1, int(len(unique_items_in_cluster) * p))
-                        
-                        # 3. Dictate the 'Expert' budget (e.g., max 20% of the slots can be rules)
-                        # This prevents the 'Substitution Effect' where rules displace CF results
-                        dynamic_max_rules = max(1, int(total_slots * 0.20)) 
-
-                        if rule_generator is not None and refine_results:
-                            # 4. Use metadata to filter for 'Bridge' tracks using Lift
-                            rule_metadata = rule_generator.predict_with_metadata(seed_tracks, current_cluster_id)
-                            
-                            # Filter: 1.5 < Lift < 15 to avoid noise and 'Album Effects'
-                            best_rules = [
-                                r for r in rule_metadata 
-                                if 1.5 < r['lift'] < 15.0 
-                            ]
-                            
-                            # 5. Sort by Confidence and apply the dynamic cap
-                            best_rules = sorted(best_rules, key=lambda x: x['confidence'], reverse=True)[:dynamic_max_rules]
-                            rule_predictions = [r['track'] for r in best_rules]
-                        else:
-                            # Backwards compatibility for naive concatenation
-                            rule_predictions = rule_generator.predict(seed_tracks, current_cluster_id) if rule_generator else []
+                    best_rules = [r for r in rule_metadata if r['lift'] > 2.0]
+                    best_rules = sorted(best_rules, key=lambda x: x['lift'], reverse=True)[:dynamic_max_rules]
+                    rule_predictions = [r['track'] for r in best_rules]
                 
                 ranked_predictions = []
                 seen_tracks = set(seed_tracks)
@@ -126,6 +111,7 @@ def eval(df, cluster_col, unique_texts, tfidf_matrix, sample_frac=0.1, output_di
                 # backwards comp
                 ranked_predictions = cf_predictions
             
+            update_trace(trace_tracker, ranked_predictions, rule_predictions)
             #for each p, evaluate the metrics and store metrics for this user
             #metrics include precision, recall, and f-score at the specified p-value
             for p in p_values:
@@ -137,6 +123,8 @@ def eval(df, cluster_col, unique_texts, tfidf_matrix, sample_frac=0.1, output_di
                 
                 # Store the score for this specific user at this specific p-value
                 current_cluster_scores[p].append(metrics['f_0.1'])
+        # Log
+        log_trace_results(trace_tracker, current_cluster_id)
 
         # After processing all users in the current cluster, calculate the average score for each p-value and store it
         cluster_averages = {p: np.mean(current_cluster_scores[p]) if current_cluster_scores[p] else 0.0 for p in p_values}
@@ -202,6 +190,3 @@ def eval(df, cluster_col, unique_texts, tfidf_matrix, sample_frac=0.1, output_di
     print("Top-1 Average:  ", [round(x, 4) for x in results['top_1']])
     print("Top-5 Average:  ", [round(x, 4) for x in results['top_5']])
     print("Top-all Average:", [round(x, 4) for x in results['top_all']])
-
-
-
