@@ -132,3 +132,37 @@ class FPGrowthGenerator(BaseRuleGenerator):
             print(f"[Predict | Cluster {cluster_id}] Seed tracks: {len(seed_set)}. Triggered {rules_triggered} rules. Found {len(recommendations)} unique recs.")
             
         return recommendations
+    
+    def predict_with_metadata(self, seed_tracks, cluster_id):
+        """
+        Extracts candidate rules with associated metrics for top-K filtering.
+        """
+        rules_df = self.cluster_rules.get(cluster_id, pd.DataFrame())
+        
+        if rules_df.empty:
+            return []
+            
+        recommendations_metadata = []
+        seed_set = frozenset([str(t) for t in seed_tracks])
+        
+        # Iterate through rules mined via the bottom-up FP-Growth approach
+        for _, rule in rules_df.iterrows():
+            # Check if the user's seed tracks satisfy the rule antecedent
+            if rule['antecedents'].issubset(seed_set):
+                for track in rule['consequents']:
+                    if track not in seed_set:
+                        # Update or add metadata, prioritizing the highest confidence for a track
+                        existing_entry = next((item for item in recommendations_metadata if item["track"] == track), None)
+                        
+                        entry = {
+                            'track': track,
+                            'confidence': rule['confidence'],
+                            'lift': rule['lift']
+                        }
+                        
+                        if not existing_entry:
+                            recommendations_metadata.append(entry)
+                        elif entry['confidence'] > existing_entry['confidence']:
+                            existing_entry.update({'confidence': rule['confidence'], 'lift': rule['lift']})
+                                
+        return recommendations_metadata

@@ -11,7 +11,7 @@ from tqdm import tqdm
 from evaluation.plot_comparison import plot_cluster_distribution, plot_f01_comparison
 from evaluation.silhouette import evaluate_silhouette
 
-def eval(df, cluster_col, unique_texts, tfidf_matrix, sample_frac=0.1, output_dir="evaluation/reports", rule_generator=None):    
+def eval(df, cluster_col, unique_texts, tfidf_matrix, sample_frac=0.1, output_dir="evaluation/reports", rule_generator=None, refine_results=False):    
     """
     Evaluates the clustering performance and saves results to the algorithm's specific folder.
     """
@@ -80,12 +80,44 @@ def eval(df, cluster_col, unique_texts, tfidf_matrix, sample_frac=0.1, output_di
             ### Rule gen PART 3 ### 
             if rule_generator is not None:
                 seed_tracks = train_dict[target_user] 
-                rule_predictions = rule_generator.predict(seed_tracks, current_cluster_id)
+
+                if not refine_results:
+                    rule_predictions = rule_generator.predict(seed_tracks, current_cluster_id)
+                
+                else: 
+                    rule_metadata = rule_generator.predict_with_metadata(seed_tracks, current_cluster_id)
+                    for p in p_values:
+                        # 1. Identify unique items in the cluster using your specific columns
+                        # We use trackname as the item identifier here
+                        unique_items_in_cluster = cluster_data['trackname'].unique()
+                        
+                        # 2. Calculate the total recommendation depth for this p-value
+                        total_slots = max(1, int(len(unique_items_in_cluster) * p))
+                        
+                        # 3. Dictate the 'Expert' budget (e.g., max 20% of the slots can be rules)
+                        # This prevents the 'Substitution Effect' where rules displace CF results
+                        dynamic_max_rules = max(1, int(total_slots * 0.20)) 
+
+                        if rule_generator is not None and refine_results:
+                            # 4. Use metadata to filter for 'Bridge' tracks using Lift
+                            rule_metadata = rule_generator.predict_with_metadata(seed_tracks, current_cluster_id)
+                            
+                            # Filter: 1.5 < Lift < 15 to avoid noise and 'Album Effects'
+                            best_rules = [
+                                r for r in rule_metadata 
+                                if 1.5 < r['lift'] < 15.0 
+                            ]
+                            
+                            # 5. Sort by Confidence and apply the dynamic cap
+                            best_rules = sorted(best_rules, key=lambda x: x['confidence'], reverse=True)[:dynamic_max_rules]
+                            rule_predictions = [r['track'] for r in best_rules]
+                        else:
+                            # Backwards compatibility for naive concatenation
+                            rule_predictions = rule_generator.predict(seed_tracks, current_cluster_id) if rule_generator else []
                 
                 ranked_predictions = []
-                # Use set fast lookups
-                seen_tracks = set(seed_tracks) 
-                
+                seen_tracks = set(seed_tracks)
+
                 for track in rule_predictions + cf_predictions:
                     if track not in seen_tracks:
                         ranked_predictions.append(track)

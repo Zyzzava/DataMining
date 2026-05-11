@@ -42,6 +42,14 @@ class BaseRuleGenerator(ABC):
             list: Ranked list of recommended track IDs.
         """
         pass
+    
+    @abstractmethod
+    def predict_with_metadata(self, seed_tracks, cluster_id):
+        """
+        Optional method to predict using both rules and metadata. 
+        By default, it just calls the regular predict method, but can be overridden.
+        """
+        pass
 
     def save_cluster_rules(self, cluster_id):
         """
