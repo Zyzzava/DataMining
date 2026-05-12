@@ -95,6 +95,49 @@ class AssociationRuleAnalyzer:
         else:
             print("Lift column not found in data.")
 
+    def plot_rule_contribution_histogram(self, stats_json_path="evaluation/reports/rule_activation_stats.json", output_path='rule_contribution_histogram.png'):
+        """
+        Plots a histogram of the rule_vs_cf_ratio across all clusters and prints the average.
+        """
+        if not os.path.exists(stats_json_path):
+            print(f"Stats file not found: {stats_json_path}")
+            return
+
+        with open(stats_json_path, "r") as f:
+            import json
+            stats = json.load(f)
+
+        # Convert the dictionary to a DataFrame
+        stats_df = pd.DataFrame.from_dict(stats, orient='index')
+        
+        ratio_col = 'rule_vs_cf_ratio'
+        if ratio_col not in stats_df.columns:
+            print(f"Column {ratio_col} not found in stats.")
+            return
+
+        # 1. Print the average ratio to the console
+        mean_ratio = stats_df[ratio_col].mean()
+        print(f"\n{'='*30}\nAVERAGE RULE CONTRIBUTION RATIO: {mean_ratio:.4f}\n{'='*30}")
+
+        # 2. Create the Histogram
+        plt.figure(figsize=(10, 6))
+        
+        # Using pure plt.hist or sns.histplot without the KDE line for a clean histogram
+        plt.hist(stats_df[ratio_col], bins=20, color='orange', edgecolor='black', alpha=0.7)
+        
+        # Add a vertical line for the mean
+        plt.axvline(mean_ratio, color='red', linestyle='--', label=f'Mean: {mean_ratio:.4f}')
+        
+        plt.title('Cluster Distribution: Association Rule Contribution')
+        plt.xlabel('Contribution Ratio (Rules / Total Recs)')
+        plt.ylabel('Frequency (Number of Clusters)')
+        plt.legend()
+        plt.grid(axis='y', linestyle=':', alpha=0.6)
+        
+        plt.tight_layout()
+        plt.savefig(output_path)
+        print(f"Histogram saved to {output_path}")
+
 def main():
     print("herro")
     analyzer = AssociationRuleAnalyzer()

@@ -89,9 +89,9 @@ def eval(df, cluster_col, unique_texts, tfidf_matrix, output_dir="evaluation/rep
                 # Filter if refining
                 if refine_results:
                     unique_items = cluster_data['trackname'].unique()
-                    dynamic_max = max(1, int(len(unique_items) * 1.0 * 0.20))
+                    dynamic_max = max(1, int(len(unique_items) * 1.0 * 0.20)) # 20 %   
                     active_rules = [r for r in rule_metadata if r['lift'] > 2.0]
-                    active_rules = sorted(active_rules, key=lambda x: x['lift'], reverse=True)[:dynamic_max]
+                    active_rules = sorted(active_rules, key=lambda x: x['confidence'], reverse=True)[:dynamic_max]
                 else:
                     active_rules = rule_metadata
                 
