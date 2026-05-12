@@ -4,165 +4,117 @@ from mlxtend.frequent_patterns import fpgrowth, association_rules
 import pandas as pd
 import time
 import os
-import ast
 
 class FPGrowthGenerator(BaseRuleGenerator):
     def __init__(self, min_support_pct=0.05, min_confidence=0.1, config_name="default", verbose=True):
-        # Pass the name up to the base class to handle folder creation
         super().__init__(algo_name="FPGrowth", config_name=config_name)
-        
         self.min_support_pct = min_support_pct
         self.min_confidence = min_confidence
-        self.verbose = verbose # Toggle for training debug logs
+        self.verbose = verbose
+        # Path to the consolidated rule store
+        self.parquet_path = "data/mined_rules.parquet"
 
     def mine_rules(self, train_dict, cluster_id, use_cache=True):
         """
-        Mines rules or loads them from disk if they already exist.
+        Loads rules from the master Parquet file or mines them if missing, 
+        filtering strictly by support and confidence.
         """
         start_time = time.time()
-        file_path = os.path.join(self.report_dir, f"cluster_{cluster_id}_rules.csv")
+        cluster_id_str = str(float(cluster_id))
 
-        # --- CACHE LOGIC: Read from CSV if it exists ---
-        if use_cache and os.path.exists(file_path):
+        # --- PARQUET CACHE LOGIC ---
+        if use_cache and os.path.exists(self.parquet_path):
             if self.verbose:
-                print(f"[FP-Growth | Cluster {cluster_id}] Found cached rules! Loading from CSV...")
+                print(f"[FP-Growth | Cluster {cluster_id}] Checking master Parquet...")
             
-            rules_df = pd.read_csv(file_path)
+            full_rules_df = pd.read_parquet(self.parquet_path)
+            rules_df = full_rules_df[full_rules_df['cluster_id'] == cluster_id_str].copy()
 
             if not rules_df.empty:
-                # Helper function to convert the literal string "frozenset({'X'})" back to a Python frozenset
-                def _parse_fs(fs_string):
-                    if pd.isna(fs_string): return frozenset()
-                    # Strip the word 'frozenset(' and the trailing ')'
-                    clean_str = str(fs_string).replace("frozenset(", "").rstrip(")")
-                    if clean_str == 'set()': return frozenset()
-                    try:
-                        # ast.literal_eval safely turns "{'A', 'B'}" into a Python set
-                        return frozenset(ast.literal_eval(clean_str))
-                    except (ValueError, SyntaxError):
-                        return frozenset()
+                # Convert list format from Parquet back to frozensets for prediction logic
+                rules_df['antecedents'] = rules_df['antecedents'].apply(frozenset)
+                rules_df['consequents'] = rules_df['consequents'].apply(frozenset)
+                
+                self.cluster_rules[cluster_id] = rules_df
+                if self.verbose:
+                    print(f"[FP-Growth] Loaded {len(rules_df)} rules from Parquet in {time.time() - start_time:.2f}s.")
+                return
 
-                # Apply the fix to the required columns
-                rules_df['antecedents'] = rules_df['antecedents'].apply(_parse_fs)
-                rules_df['consequents'] = rules_df['consequents'].apply(_parse_fs)
-
-            self.cluster_rules[cluster_id] = rules_df
-            
-            if self.verbose:
-                print(f"[FP-Growth | Cluster {cluster_id}] Loaded {len(rules_df)} rules from cache in {time.time() - start_time:.2f} seconds.")
-            return
-
+        # --- MINING LOGIC ---
         if self.verbose:
-            print(f"\n[FP-Growth | Cluster {cluster_id}] --- Starting Rule Mining ---")
-            print(f"[FP-Growth | Cluster {cluster_id}] 1. Parsing {len(train_dict)} playlists...")
-            
-        transactions = [
-            [str(track) for track in playlist if pd.notna(track) and track is not None]
-            for playlist in train_dict.values()
-        ]
-        
-        if self.verbose:
-            print(f"[FP-Growth | Cluster {cluster_id}] 2. One-hot encoding transactions...")
-            
+            print(f"[FP-Growth | Cluster {cluster_id}] Mining new rules...")
+
+        transactions = [[str(t) for t in p if pd.notna(t)] for p in train_dict.values()]
         te = TransactionEncoder()
         te_ary = te.fit(transactions).transform(transactions, sparse=True)
         df = pd.DataFrame.sparse.from_spmatrix(te_ary, columns=te.columns_)
-        
-        if self.verbose:
-            print(f"[FP-Growth | Cluster {cluster_id}]    -> Matrix shape: {df.shape[0]} playlists x {df.shape[1]} unique tracks.")
-            print(f"[FP-Growth | Cluster {cluster_id}] 3. Finding frequent itemsets (min_support={self.min_support_pct})...")
-            
+
+        # 1. Frequent Itemsets based on min_support
         frequent_itemsets = fpgrowth(df, min_support=self.min_support_pct, use_colnames=True, max_len=3)
         
-        if self.verbose:
-            print(f"[FP-Growth | Cluster {cluster_id}]    -> Found {len(frequent_itemsets)} frequent itemsets.")
-            print(f"[FP-Growth | Cluster {cluster_id}] 4. Generating association rules (min_confidence={self.min_confidence})...")
-            
         if frequent_itemsets.empty:
-            if self.verbose: print(f"[FP-Growth | Cluster {cluster_id}]    -> WARNING: 0 rules generated.")
             self.cluster_rules[cluster_id] = pd.DataFrame()
         else:
+            # 2. Association Rules based on min_confidence
             rules = association_rules(frequent_itemsets, metric="confidence", min_threshold=self.min_confidence)
             
-            # Optional: Prune weak rules based on lift to keep the cache clean
-            if not rules.empty and 'lift' in rules.columns:
-                rules = rules[rules['lift'] > 1.2]
-                
+            # Lift pruning removed as requested; keeping all rules satisfying support/confidence
+            rules['cluster_id'] = cluster_id_str
             self.cluster_rules[cluster_id] = rules
-            if self.verbose: 
-                print(f"[FP-Growth | Cluster {cluster_id}]    -> Successfully generated {len(rules)} rules.")
-            
-        self.save_cluster_rules(cluster_id)
-        
-        if self.verbose:
-            elapsed = time.time() - start_time
-            print(f"[FP-Growth | Cluster {cluster_id}] --- Finished in {elapsed:.2f} seconds ---\n")
 
-    def predict(self, seed_tracks, cluster_id, max_recommendations=None, verbose_predict=False):
-        """
-        verbose_predict: Set to True ONLY if testing a single user. 
-        If running a loop of 200 users, keep False to avoid console flooding.
-        """
+            if self.verbose:
+                print(f"[FP-Growth] Generated {len(rules)} rules based on support and confidence.")
+
+    def predict(self, seed_tracks, cluster_id, max_recommendations=None):
         rules_df = self.cluster_rules.get(cluster_id, pd.DataFrame())
-        
         if rules_df.empty:
-            if verbose_predict: print(f"[Predict | Cluster {cluster_id}] No rules available. Returning 0 recommendations.")
             return []
             
         recommendations = []
-        seed_set = frozenset([str(t) for t in seed_tracks]) # Ensure strings to match rules
-        rules_triggered = 0
+        seed_set = frozenset([str(t) for t in seed_tracks])
         
-        # Sort by confidence so the best rules are checked first
+        # Sort by confidence to prioritize the most likely transitions
         sorted_rules = rules_df.sort_values(by='confidence', ascending=False)
         
         for _, rule in sorted_rules.iterrows():
             if rule['antecedents'].issubset(seed_set):
-                rules_triggered += 1
                 for track in rule['consequents']:
                     if track not in seed_set and track not in recommendations:
                         recommendations.append(track)
-                        
                         if max_recommendations and len(recommendations) >= max_recommendations:
-                            if verbose_predict: 
-                                print(f"[Predict] Hit max_rec limit ({max_recommendations}). Triggered {rules_triggered} rules.")
                             return recommendations
-                            
-        if verbose_predict:
-            print(f"[Predict | Cluster {cluster_id}] Seed tracks: {len(seed_set)}. Triggered {rules_triggered} rules. Found {len(recommendations)} unique recs.")
-            
         return recommendations
     
     def predict_with_metadata(self, seed_tracks, cluster_id):
         """
-        Extracts candidate rules with associated metrics for top-K filtering.
+        Extracts rules with metrics. Support is included to track activation statistics.
         """
         rules_df = self.cluster_rules.get(cluster_id, pd.DataFrame())
-        
         if rules_df.empty:
             return []
             
         recommendations_metadata = []
         seed_set = frozenset([str(t) for t in seed_tracks])
         
-        # Iterate through rules mined via the bottom-up FP-Growth approach
+        # mlxtend uses 'support' for rule-level support (antecedent AND consequent)
+        support_col = 'support' if 'support' in rules_df.columns else 'antecedent support'
+        
         for _, rule in rules_df.iterrows():
-            # Check if the user's seed tracks satisfy the rule antecedent
             if rule['antecedents'].issubset(seed_set):
                 for track in rule['consequents']:
                     if track not in seed_set:
-                        # Update or add metadata, prioritizing the highest confidence for a track
                         existing_entry = next((item for item in recommendations_metadata if item["track"] == track), None)
                         
                         entry = {
                             'track': track,
                             'confidence': rule['confidence'],
-                            'lift': rule['lift']
+                            'lift': rule['lift'],
+                            'support': rule[support_col]
                         }
                         
                         if not existing_entry:
                             recommendations_metadata.append(entry)
                         elif entry['confidence'] > existing_entry['confidence']:
-                            existing_entry.update({'confidence': rule['confidence'], 'lift': rule['lift']})
+                            existing_entry.update(entry)
                                 
         return recommendations_metadata
