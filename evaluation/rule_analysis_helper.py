@@ -15,7 +15,6 @@ class AssociationRuleAnalyzer:
         
         # 1. Clean invisible characters and normalize
         df.columns = [str(c).strip().lower() for c in df.columns]
-        print(df.columns)
                 
         return df
 
@@ -139,7 +138,6 @@ class AssociationRuleAnalyzer:
         print(f"Histogram saved to {output_path}")
 
 def main():
-    print("herro")
     analyzer = AssociationRuleAnalyzer()
     analyzer.plot_metric_distributions()
     analyzer.plot_support_vs_confidence()
