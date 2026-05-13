@@ -154,7 +154,7 @@ def compare_results(pure_cf_path, hybrid_path):
     pivot_df = df_compare.pivot(
         index="Category", 
         columns="Metric Depth (p)", 
-        values=["Pure CF", "Hybrid (Rules+CF)", "Delta"]
+        values=["Delta"]
     )
     
     # 3. Reindex to ensure logical order (Top-1 to Top-all)
