@@ -232,18 +232,7 @@ def plot_sparsity_analysis(tfidf_matrix, stage="Pre-Filter"):
     plt.title(f"Distribution of Non-Zero Features per Document ({stage})\nOverall Matrix Sparsity: {overall_sparsity:.4f}%", pad=15)
     plt.xlabel("Number of Non-Zero Features (Words) per Playlist", labelpad=10)
     plt.ylabel("Frequency (Number of Playlists)", labelpad=10)
-    
-    # Empty docs logic and warning box
-    if empty_docs > 0:
-        # Fixed the broken character in the label
-        plt.axvline(0, color='#E74C3C', linewidth=3, label=f'EMPTY PLAYLISTS: {empty_docs:,}')
-        
-        # Nicer looking text box
-        props = dict(boxstyle='round,pad=0.6', facecolor='#FADBD8', edgecolor='#E74C3C', alpha=0.9)
-        
-        # MOVED to the right (x=0.35) so it stops overlapping the 0-bin bar
-        ax.text(0.35, 0.85, f"⚠️ Noise Detected:\n{empty_docs:,} playlists have 0 features\nafter vocabulary trimming.", 
-                transform=ax.transAxes, fontsize=13, verticalalignment='top', bbox=props, color='#641E16')
+
     
     # Add vertical lines for mean and median with modern colors
     mean_val = np.mean(non_zeros_per_doc)
