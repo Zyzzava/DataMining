@@ -26,22 +26,6 @@ class BaseRuleGenerator(ABC):
             cluster_id (int/str): The ID of the current cluster.
         """
         pass
-
-    @abstractmethod
-    def predict(self, seed_tracks, cluster_id, max_recommendations=None):
-        """
-        Uses the rules stored for the specific cluster to predict new tracks 
-        based on the provided seed tracks.
-        
-        Args:
-            seed_tracks (list/set): The visible tracks in the test playlist.
-            cluster_id (int/str): The ID of the cluster this playlist belongs to.
-            max_recommendations (int): Optional cap on how many tracks to return.
-            
-        Returns:
-            list: Ranked list of recommended track IDs.
-        """
-        pass
     
     @abstractmethod
     def predict_with_metadata(self, seed_tracks, cluster_id):

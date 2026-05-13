@@ -1,3 +1,4 @@
+import itertools
 import json
 import os
 
@@ -90,8 +91,15 @@ def eval(df, cluster_col, unique_texts, tfidf_matrix, output_dir="evaluation/rep
                 if refine_results:
                     unique_items = cluster_data['trackname'].unique()
                     dynamic_max = max(1, int(len(unique_items) * 1.0 * 0.20)) # 20 %   
+                    
+                    # 1. FILTER FIRST: Drop any rules where lift is 2.0 or lower
                     active_rules = [r for r in rule_metadata if r['lift'] > 2.0]
-                    active_rules = sorted(active_rules, key=lambda x: x['confidence'], reverse=True)[:dynamic_max]
+                    
+                    # 2. SORT SECOND: Rank the remaining rules by confidence (High to Low)
+                    active_rules = sorted(active_rules, key=lambda x: x['confidence'], reverse=True)
+                    
+                    # 3. SLICE THIRD: Keep only the top % allowed by dynamic_max
+                    active_rules = active_rules[:dynamic_max]
                 else:
                     active_rules = rule_metadata
                 
@@ -105,16 +113,21 @@ def eval(df, cluster_col, unique_texts, tfidf_matrix, output_dir="evaluation/rep
 
             ranked_predictions = []
             seen_tracks = set(seed_tracks)
+            
+            # O(1) Lookup set for tracking rule contributions efficiently
+            rule_predictions_set = set(rule_predictions) 
 
-            # Tracking ratios
-            for track in rule_predictions + cf_predictions:
+            # OPTIMIZED HYBRID MERGE: 
+            # Using itertools.chain prevents creating a massive temporary list in memory
+            for track in itertools.chain(rule_predictions, cf_predictions):
                 if track not in seen_tracks:
                     ranked_predictions.append(track)
                     seen_tracks.add(track)
-                    if track in rule_predictions:
+                    
+                    # Using the Set here turns an O(N) lookup into an O(1) lookup
+                    if track in rule_predictions_set:
                         cluster_rule_data["rule_contributions"] += 1
                     cluster_rule_data["total_recommendations"] += 1
-                
             
             update_trace(trace_tracker, ranked_predictions, rule_predictions)
             for p in p_values:

@@ -4,384 +4,384 @@
         "avg_lift": 0.0,
         "avg_confidence": 0.0,
         "avg_support": 0.0,
-        "total_recs": 66731886
+        "total_recs": 67745256
     },
     "12.0": {
         "rule_vs_cf_ratio": 0.0,
         "avg_lift": 0.0,
         "avg_confidence": 0.0,
         "avg_support": 0.0,
-        "total_recs": 8440668
+        "total_recs": 8221603
     },
     "2.0": {
         "rule_vs_cf_ratio": 0.0001,
-        "avg_lift": 23.699,
-        "avg_confidence": 0.6161,
-        "avg_support": 0.0166,
-        "total_recs": 1945747
+        "avg_lift": 23.2189,
+        "avg_confidence": 0.6006,
+        "avg_support": 0.0167,
+        "total_recs": 1901676
     },
     "4.0": {
         "rule_vs_cf_ratio": 0.0001,
-        "avg_lift": 28.2095,
-        "avg_confidence": 0.6784,
-        "avg_support": 0.0172,
-        "total_recs": 5909998
+        "avg_lift": 25.9173,
+        "avg_confidence": 0.6168,
+        "avg_support": 0.0177,
+        "total_recs": 5916979
     },
     "6.0": {
         "rule_vs_cf_ratio": 0.0001,
-        "avg_lift": 8.4451,
-        "avg_confidence": 0.64,
-        "avg_support": 0.0398,
-        "total_recs": 3661081
+        "avg_lift": 8.6452,
+        "avg_confidence": 0.5706,
+        "avg_support": 0.0495,
+        "total_recs": 3674588
     },
     "40.0": {
         "rule_vs_cf_ratio": 0.0,
         "avg_lift": 16.5857,
-        "avg_confidence": 0.4909,
+        "avg_confidence": 0.5048,
         "avg_support": 0.0155,
-        "total_recs": 10909622
+        "total_recs": 10607548
     },
     "14.0": {
         "rule_vs_cf_ratio": 0.0,
-        "avg_lift": 23.8095,
-        "avg_confidence": 0.6275,
-        "avg_support": 0.0175,
-        "total_recs": 1449216
+        "avg_lift": 22.5813,
+        "avg_confidence": 0.6036,
+        "avg_support": 0.0174,
+        "total_recs": 1330859
     },
     "54.0": {
         "rule_vs_cf_ratio": 0.0,
-        "avg_lift": 39.222,
-        "avg_confidence": 0.7707,
-        "avg_support": 0.016,
-        "total_recs": 2060066
+        "avg_lift": 38.763,
+        "avg_confidence": 0.7576,
+        "avg_support": 0.0161,
+        "total_recs": 1963394
     },
     "53.0": {
         "rule_vs_cf_ratio": 0.0,
         "avg_lift": 0.0,
         "avg_confidence": 0.0,
         "avg_support": 0.0,
-        "total_recs": 1334257
+        "total_recs": 1361753
     },
     "29.0": {
         "rule_vs_cf_ratio": 0.0,
-        "avg_lift": 34.0928,
-        "avg_confidence": 0.7176,
-        "avg_support": 0.0161,
-        "total_recs": 2189521
+        "avg_lift": 34.7332,
+        "avg_confidence": 0.7111,
+        "avg_support": 0.0162,
+        "total_recs": 2109128
     },
     "28.0": {
-        "rule_vs_cf_ratio": 0.0008,
-        "avg_lift": 29.6677,
-        "avg_confidence": 0.6724,
-        "avg_support": 0.0163,
-        "total_recs": 706526
+        "rule_vs_cf_ratio": 0.0007,
+        "avg_lift": 28.2956,
+        "avg_confidence": 0.6425,
+        "avg_support": 0.0164,
+        "total_recs": 697566
     },
     "22.0": {
         "rule_vs_cf_ratio": 0.0002,
-        "avg_lift": 8.0753,
-        "avg_confidence": 0.3985,
-        "avg_support": 0.0178,
-        "total_recs": 2466046
+        "avg_lift": 7.8608,
+        "avg_confidence": 0.3807,
+        "avg_support": 0.0176,
+        "total_recs": 2469780
     },
     "34.0": {
         "rule_vs_cf_ratio": 0.0001,
-        "avg_lift": 30.3573,
-        "avg_confidence": 0.6982,
-        "avg_support": 0.0158,
-        "total_recs": 420150
+        "avg_lift": 27.7706,
+        "avg_confidence": 0.6243,
+        "avg_support": 0.0159,
+        "total_recs": 432830
     },
     "46.0": {
         "rule_vs_cf_ratio": 0.0,
-        "avg_lift": 21.9656,
-        "avg_confidence": 0.62,
-        "avg_support": 0.0166,
-        "total_recs": 1257614
+        "avg_lift": 18.337,
+        "avg_confidence": 0.542,
+        "avg_support": 0.0167,
+        "total_recs": 1262516
     },
     "26.0": {
         "rule_vs_cf_ratio": 0.0,
         "avg_lift": 0.0,
         "avg_confidence": 0.0,
         "avg_support": 0.0,
-        "total_recs": 657509
+        "total_recs": 656264
     },
     "36.0": {
         "rule_vs_cf_ratio": 0.0,
         "avg_lift": 0.0,
         "avg_confidence": 0.0,
         "avg_support": 0.0,
-        "total_recs": 1203584
+        "total_recs": 1272751
     },
     "5.0": {
         "rule_vs_cf_ratio": 0.0003,
-        "avg_lift": 16.27,
-        "avg_confidence": 0.5849,
-        "avg_support": 0.0198,
-        "total_recs": 657509
+        "avg_lift": 14.8547,
+        "avg_confidence": 0.5123,
+        "avg_support": 0.0228,
+        "total_recs": 638282
     },
     "25.0": {
         "rule_vs_cf_ratio": 0.0003,
-        "avg_lift": 23.0866,
-        "avg_confidence": 0.6577,
-        "avg_support": 0.018,
-        "total_recs": 638771
+        "avg_lift": 21.0402,
+        "avg_confidence": 0.5951,
+        "avg_support": 0.0195,
+        "total_recs": 665350
     },
     "33.0": {
         "rule_vs_cf_ratio": 0.0005,
-        "avg_lift": 11.2884,
-        "avg_confidence": 0.4687,
-        "avg_support": 0.0192,
-        "total_recs": 2056147
+        "avg_lift": 10.5282,
+        "avg_confidence": 0.4241,
+        "avg_support": 0.0197,
+        "total_recs": 2042746
     },
     "19.0": {
         "rule_vs_cf_ratio": 0.0002,
-        "avg_lift": 18.0002,
-        "avg_confidence": 0.6382,
-        "avg_support": 0.0219,
-        "total_recs": 587173
+        "avg_lift": 16.9707,
+        "avg_confidence": 0.5412,
+        "avg_support": 0.0229,
+        "total_recs": 603295
     },
     "9.0": {
         "rule_vs_cf_ratio": 0.0,
         "avg_lift": 35.0043,
-        "avg_confidence": 0.6944,
+        "avg_confidence": 0.7378,
         "avg_support": 0.0155,
-        "total_recs": 339434
+        "total_recs": 337861
     },
     "27.0": {
         "rule_vs_cf_ratio": 0.0,
-        "avg_lift": 29.7335,
-        "avg_confidence": 0.6957,
-        "avg_support": 0.017,
-        "total_recs": 534380
+        "avg_lift": 29.0711,
+        "avg_confidence": 0.6824,
+        "avg_support": 0.0168,
+        "total_recs": 507929
     },
     "17.0": {
         "rule_vs_cf_ratio": 0.0002,
-        "avg_lift": 17.3304,
-        "avg_confidence": 0.6223,
-        "avg_support": 0.021,
-        "total_recs": 1103087
+        "avg_lift": 15.123,
+        "avg_confidence": 0.5119,
+        "avg_support": 0.0226,
+        "total_recs": 1097461
     },
     "1.0": {
         "rule_vs_cf_ratio": 0.0002,
-        "avg_lift": 26.0386,
-        "avg_confidence": 0.6651,
+        "avg_lift": 25.053,
+        "avg_confidence": 0.6274,
         "avg_support": 0.0172,
-        "total_recs": 525194
+        "total_recs": 542426
     },
     "44.0": {
         "rule_vs_cf_ratio": 0.0001,
-        "avg_lift": 29.5265,
-        "avg_confidence": 0.7436,
-        "avg_support": 0.0185,
-        "total_recs": 1167491
+        "avg_lift": 27.7401,
+        "avg_confidence": 0.6863,
+        "avg_support": 0.0193,
+        "total_recs": 1179763
     },
     "15.0": {
         "rule_vs_cf_ratio": 0.0,
         "avg_lift": 50.4667,
-        "avg_confidence": 0.8667,
+        "avg_confidence": 0.9,
         "avg_support": 0.0159,
-        "total_recs": 909087
+        "total_recs": 952812
     },
     "20.0": {
         "rule_vs_cf_ratio": 0.0,
-        "avg_lift": 44.4402,
-        "avg_confidence": 0.8141,
-        "avg_support": 0.016,
-        "total_recs": 467422
+        "avg_lift": 45.0141,
+        "avg_confidence": 0.7904,
+        "avg_support": 0.0158,
+        "total_recs": 510401
     },
     "3.0": {
         "rule_vs_cf_ratio": 0.0,
-        "avg_lift": 44.0413,
-        "avg_confidence": 0.866,
-        "avg_support": 0.0155,
-        "total_recs": 804968
+        "avg_lift": 43.7789,
+        "avg_confidence": 0.8103,
+        "avg_support": 0.0154,
+        "total_recs": 786951
     },
     "10.0": {
         "rule_vs_cf_ratio": 0.0,
-        "avg_lift": 39.7193,
-        "avg_confidence": 0.8483,
-        "avg_support": 0.0161,
-        "total_recs": 659662
+        "avg_lift": 35.6842,
+        "avg_confidence": 0.7639,
+        "avg_support": 0.0169,
+        "total_recs": 707621
     },
     "11.0": {
         "rule_vs_cf_ratio": 0.0002,
-        "avg_lift": 18.904,
-        "avg_confidence": 0.6411,
-        "avg_support": 0.0204,
-        "total_recs": 914836
+        "avg_lift": 16.3998,
+        "avg_confidence": 0.5463,
+        "avg_support": 0.0259,
+        "total_recs": 864084
     },
     "7.0": {
-        "rule_vs_cf_ratio": 0.0073,
-        "avg_lift": 5.1534,
-        "avg_confidence": 0.4924,
-        "avg_support": 0.0206,
-        "total_recs": 1232596
+        "rule_vs_cf_ratio": 0.0074,
+        "avg_lift": 4.1414,
+        "avg_confidence": 0.367,
+        "avg_support": 0.0335,
+        "total_recs": 1229605
     },
     "31.0": {
         "rule_vs_cf_ratio": 0.0008,
-        "avg_lift": 15.9691,
-        "avg_confidence": 0.5446,
-        "avg_support": 0.0188,
-        "total_recs": 1404049
+        "avg_lift": 13.9488,
+        "avg_confidence": 0.476,
+        "avg_support": 0.0197,
+        "total_recs": 1445947
     },
     "39.0": {
         "rule_vs_cf_ratio": 0.0015,
-        "avg_lift": 14.5805,
-        "avg_confidence": 0.4873,
-        "avg_support": 0.0183,
-        "total_recs": 1409719
+        "avg_lift": 13.3727,
+        "avg_confidence": 0.4319,
+        "avg_support": 0.0189,
+        "total_recs": 1412695
     },
     "13.0": {
         "rule_vs_cf_ratio": 0.0001,
-        "avg_lift": 25.5137,
-        "avg_confidence": 0.6589,
-        "avg_support": 0.0176,
-        "total_recs": 289004
+        "avg_lift": 23.9409,
+        "avg_confidence": 0.6266,
+        "avg_support": 0.0172,
+        "total_recs": 297695
     },
     "41.0": {
         "rule_vs_cf_ratio": 0.0008,
-        "avg_lift": 17.9968,
-        "avg_confidence": 0.624,
-        "avg_support": 0.021,
-        "total_recs": 363069
+        "avg_lift": 15.8474,
+        "avg_confidence": 0.5047,
+        "avg_support": 0.0244,
+        "total_recs": 365239
     },
     "24.0": {
-        "rule_vs_cf_ratio": 0.001,
-        "avg_lift": 30.1011,
-        "avg_confidence": 0.813,
-        "avg_support": 0.017,
-        "total_recs": 296349
+        "rule_vs_cf_ratio": 0.0009,
+        "avg_lift": 25.0331,
+        "avg_confidence": 0.6591,
+        "avg_support": 0.0208,
+        "total_recs": 319747
     },
     "23.0": {
         "rule_vs_cf_ratio": 0.0009,
-        "avg_lift": 17.8387,
-        "avg_confidence": 0.698,
-        "avg_support": 0.0224,
-        "total_recs": 101167
+        "avg_lift": 16.2191,
+        "avg_confidence": 0.6248,
+        "avg_support": 0.0292,
+        "total_recs": 100504
     },
     "42.0": {
         "rule_vs_cf_ratio": 0.0002,
-        "avg_lift": 20.6014,
-        "avg_confidence": 0.7317,
-        "avg_support": 0.0199,
-        "total_recs": 475702
+        "avg_lift": 17.7174,
+        "avg_confidence": 0.6213,
+        "avg_support": 0.0252,
+        "total_recs": 417069
     },
     "37.0": {
-        "rule_vs_cf_ratio": 0.0006,
-        "avg_lift": 33.7069,
-        "avg_confidence": 0.7436,
-        "avg_support": 0.0172,
-        "total_recs": 269662
+        "rule_vs_cf_ratio": 0.0005,
+        "avg_lift": 30.9761,
+        "avg_confidence": 0.6697,
+        "avg_support": 0.0174,
+        "total_recs": 282863
     },
     "18.0": {
         "rule_vs_cf_ratio": 0.0004,
-        "avg_lift": 32.1553,
-        "avg_confidence": 0.8436,
-        "avg_support": 0.0177,
-        "total_recs": 247576
+        "avg_lift": 28.0933,
+        "avg_confidence": 0.7131,
+        "avg_support": 0.0213,
+        "total_recs": 255074
     },
     "16.0": {
-        "rule_vs_cf_ratio": 0.0014,
-        "avg_lift": 19.9604,
-        "avg_confidence": 0.6407,
-        "avg_support": 0.0193,
-        "total_recs": 209034
+        "rule_vs_cf_ratio": 0.0013,
+        "avg_lift": 17.0731,
+        "avg_confidence": 0.5291,
+        "avg_support": 0.0212,
+        "total_recs": 226742
     },
     "8.0": {
         "rule_vs_cf_ratio": 0.0,
         "avg_lift": 0.0,
         "avg_confidence": 0.0,
         "avg_support": 0.0,
-        "total_recs": 222203
+        "total_recs": 218844
     },
     "52.0": {
         "rule_vs_cf_ratio": 0.0009,
-        "avg_lift": 19.8659,
-        "avg_confidence": 0.5558,
+        "avg_lift": 18.3609,
+        "avg_confidence": 0.5021,
         "avg_support": 0.0167,
-        "total_recs": 684003
+        "total_recs": 693580
     },
     "0.0": {
         "rule_vs_cf_ratio": 0.0003,
-        "avg_lift": 16.9436,
-        "avg_confidence": 0.6199,
-        "avg_support": 0.021,
-        "total_recs": 271795
+        "avg_lift": 15.5589,
+        "avg_confidence": 0.5505,
+        "avg_support": 0.0245,
+        "total_recs": 265467
     },
     "49.0": {
-        "rule_vs_cf_ratio": 0.0179,
-        "avg_lift": 17.3858,
-        "avg_confidence": 0.5841,
-        "avg_support": 0.0186,
-        "total_recs": 70790
+        "rule_vs_cf_ratio": 0.0188,
+        "avg_lift": 14.6462,
+        "avg_confidence": 0.4702,
+        "avg_support": 0.022,
+        "total_recs": 68345
     },
     "47.0": {
-        "rule_vs_cf_ratio": 0.0027,
-        "avg_lift": 17.2886,
-        "avg_confidence": 0.5851,
-        "avg_support": 0.0191,
-        "total_recs": 251179
+        "rule_vs_cf_ratio": 0.0025,
+        "avg_lift": 15.0089,
+        "avg_confidence": 0.4698,
+        "avg_support": 0.0208,
+        "total_recs": 270165
     },
     "21.0": {
-        "rule_vs_cf_ratio": 0.0007,
-        "avg_lift": 28.8387,
-        "avg_confidence": 0.7683,
-        "avg_support": 0.018,
-        "total_recs": 354804
+        "rule_vs_cf_ratio": 0.0006,
+        "avg_lift": 27.1019,
+        "avg_confidence": 0.6605,
+        "avg_support": 0.0223,
+        "total_recs": 379070
     },
     "30.0": {
-        "rule_vs_cf_ratio": 0.0106,
-        "avg_lift": 22.7528,
-        "avg_confidence": 0.5753,
-        "avg_support": 0.018,
-        "total_recs": 60021
+        "rule_vs_cf_ratio": 0.0105,
+        "avg_lift": 21.6776,
+        "avg_confidence": 0.5353,
+        "avg_support": 0.0189,
+        "total_recs": 57502
     },
     "43.0": {
-        "rule_vs_cf_ratio": 0.0006,
-        "avg_lift": 28.4638,
-        "avg_confidence": 0.7711,
-        "avg_support": 0.0175,
-        "total_recs": 135488
+        "rule_vs_cf_ratio": 0.0005,
+        "avg_lift": 26.6748,
+        "avg_confidence": 0.6744,
+        "avg_support": 0.0197,
+        "total_recs": 133542
     },
     "45.0": {
         "rule_vs_cf_ratio": 0.0004,
-        "avg_lift": 15.2572,
-        "avg_confidence": 0.669,
-        "avg_support": 0.0229,
-        "total_recs": 370301
+        "avg_lift": 13.7952,
+        "avg_confidence": 0.5676,
+        "avg_support": 0.0307,
+        "total_recs": 359847
     },
     "38.0": {
-        "rule_vs_cf_ratio": 0.0018,
-        "avg_lift": 23.0166,
-        "avg_confidence": 0.6938,
-        "avg_support": 0.0198,
-        "total_recs": 43490
+        "rule_vs_cf_ratio": 0.0017,
+        "avg_lift": 19.9863,
+        "avg_confidence": 0.5741,
+        "avg_support": 0.0214,
+        "total_recs": 40463
     },
     "50.0": {
-        "rule_vs_cf_ratio": 0.0031,
-        "avg_lift": 14.0658,
-        "avg_confidence": 0.4986,
-        "avg_support": 0.0165,
-        "total_recs": 468124
+        "rule_vs_cf_ratio": 0.0032,
+        "avg_lift": 12.0836,
+        "avg_confidence": 0.4202,
+        "avg_support": 0.0173,
+        "total_recs": 488654
     },
     "51.0": {
         "rule_vs_cf_ratio": 0.0172,
-        "avg_lift": 23.9831,
-        "avg_confidence": 0.6969,
-        "avg_support": 0.0193,
-        "total_recs": 33004
+        "avg_lift": 21.7974,
+        "avg_confidence": 0.6063,
+        "avg_support": 0.023,
+        "total_recs": 35392
     },
     "48.0": {
-        "rule_vs_cf_ratio": 0.0226,
-        "avg_lift": 24.9987,
-        "avg_confidence": 0.6851,
-        "avg_support": 0.0168,
-        "total_recs": 15124
+        "rule_vs_cf_ratio": 0.0227,
+        "avg_lift": 21.1832,
+        "avg_confidence": 0.57,
+        "avg_support": 0.0221,
+        "total_recs": 14875
     },
     "35.0": {
-        "rule_vs_cf_ratio": 0.0785,
-        "avg_lift": 22.1247,
-        "avg_confidence": 0.6808,
-        "avg_support": 0.0179,
-        "total_recs": 29099
+        "rule_vs_cf_ratio": 0.0797,
+        "avg_lift": 17.7049,
+        "avg_confidence": 0.4549,
+        "avg_support": 0.0197,
+        "total_recs": 28149
     }
 }
