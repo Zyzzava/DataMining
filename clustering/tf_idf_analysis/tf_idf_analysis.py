@@ -168,7 +168,6 @@ def plot_cumulative_importance(tfidf_matrix):
     Calculates the cumulative sum of TF-IDF weights to determine optimal max_features.
     Returns the feature counts required to hit 80%, 90%, and 95% total variance.
     """
-    print("Generating Cumulative Importance plot...")
     avg_weights = np.asarray(tfidf_matrix.mean(axis=0)).ravel()
     sorted_weights = np.sort(avg_weights)[::-1]
     
@@ -202,8 +201,74 @@ def plot_cumulative_importance(tfidf_matrix):
     plt.tight_layout()
     plt.savefig(f"{OUTPUT_DIR}/cumulative_importance.png")
     plt.close()
+
+def plot_sparsity_analysis(tfidf_matrix, stage="Pre-Filter"):
+    """
+    Analyzes and plots the sparsity of the TF-IDF matrix. 
+    Includes aesthetic improvements for presentation and readability.
+    """
+    print(f"Generating Sparsity Analysis plot ({stage})...")
     
-    return cutoffs
+    # Calculate how many non-zero features exist in each document (row)
+    non_zeros_per_doc = np.asarray((tfidf_matrix > 0).sum(axis=1)).ravel()
+    empty_docs = np.sum(non_zeros_per_doc == 0)
+    
+    # Calculate overall matrix sparsity
+    n_elements = tfidf_matrix.shape[0] * tfidf_matrix.shape[1]
+    n_nonzero = tfidf_matrix.nnz if issparse(tfidf_matrix) else np.count_nonzero(tfidf_matrix)
+    overall_sparsity = (1 - (n_nonzero / n_elements)) * 100
+    
+    # Set a cleaner, modern Seaborn style
+    sns.set_theme(style="whitegrid", context="talk")
+    
+    # Slightly wider figure for better text fitting
+    plt.figure(figsize=(12, 7))
+    
+    # Plot the distribution with a slightly softer purple and dark borders
+    ax = sns.histplot(non_zeros_per_doc, bins=50, kde=False, 
+                      color='#8E44AD', edgecolor='black', alpha=0.85)
+    
+    # Add informative titles and labels with slight padding
+    plt.title(f"Distribution of Non-Zero Features per Document ({stage})\nOverall Matrix Sparsity: {overall_sparsity:.4f}%", pad=15)
+    plt.xlabel("Number of Non-Zero Features (Words) per Playlist", labelpad=10)
+    plt.ylabel("Frequency (Number of Playlists)", labelpad=10)
+    
+    # Empty docs logic and warning box
+    if empty_docs > 0:
+        # Fixed the broken character in the label
+        plt.axvline(0, color='#E74C3C', linewidth=3, label=f'EMPTY PLAYLISTS: {empty_docs:,}')
+        
+        # Nicer looking text box
+        props = dict(boxstyle='round,pad=0.6', facecolor='#FADBD8', edgecolor='#E74C3C', alpha=0.9)
+        
+        # MOVED to the right (x=0.35) so it stops overlapping the 0-bin bar
+        ax.text(0.35, 0.85, f"⚠️ Noise Detected:\n{empty_docs:,} playlists have 0 features\nafter vocabulary trimming.", 
+                transform=ax.transAxes, fontsize=13, verticalalignment='top', bbox=props, color='#641E16')
+    
+    # Add vertical lines for mean and median with modern colors
+    mean_val = np.mean(non_zeros_per_doc)
+    median_val = np.median(non_zeros_per_doc)
+    plt.axvline(mean_val, color='#F39C12', linestyle='dashed', linewidth=2.5, label=f'Mean: {mean_val:.1f}')
+    plt.axvline(median_val, color='#27AE60', linestyle='dashed', linewidth=2.5, label=f'Median: {median_val:.1f}')
+    
+    # Clean up the legend and axes
+    plt.legend(frameon=True, shadow=True, facecolor='white', fontsize=11)
+    sns.despine() # Removes the boxy top and right outline lines
+    
+    plt.tight_layout()
+    
+    # Save the plot (using dpi=300 makes the image much crisper)
+    filename = f"{OUTPUT_DIR}/sparsity_analysis_{stage.lower().replace('-', '_')}.png"
+    plt.savefig(filename, dpi=300)
+    
+    # Show inline if running in a notebook, then close
+    plt.show()
+    plt.close()
+    
+    # Reset seaborn theme back to default so it doesn't affect your other plots unexpectedly
+    sns.reset_orig()
+    
+    return overall_sparsity, non_zeros_per_doc
 
 def generate_comprehensive_report(tfidf_matrix, cutoffs, doc_freqs):
     """
