@@ -24,7 +24,7 @@ class AssociationRuleAnalyzer:
             return 'support'
         return 'antecedent support' if 'antecedent support' in self.all_rules.columns else None
 
-    def plot_support_confidence_distributions(self, output_path='support_confidence_distributions.png'):
+    def plot_support_confidence_distributions(self, output_path='evaluation/reports/Hybrid_FPGrowth_CF/support_confidence_distributions.png'):
         """Plots the global distributions for Support and Confidence."""
         supp_col = self._get_supp_col()
         if not supp_col or 'confidence' not in self.all_rules.columns:
@@ -35,13 +35,13 @@ class AssociationRuleAnalyzer:
         metrics = [(supp_col, 'blue'), ('confidence', 'green')]
         
         for i, (col, color) in enumerate(metrics):
-            sns.histplot(self.all_rules[col], kde=True, ax=axes[i], color=color)
+            sns.histplot(self.all_rules[col], kde=True, ax=axes[i], color=color)    
             axes[i].set_title(f'Global {col.replace("_", " ").capitalize()} Distribution')
             
         plt.tight_layout()
         plt.savefig(output_path)
 
-    def plot_lift_distribution(self, output_path='lift_distribution.png'):
+    def plot_lift_distribution(self, output_path='evaluation/reports/Hybrid_FPGrowth_CF/lift_distribution.png'):
         """Plots the global distribution specifically for Lift."""
         if 'lift' not in self.all_rules.columns:
             print("Lift column not found.")
@@ -55,7 +55,7 @@ class AssociationRuleAnalyzer:
         plt.tight_layout()
         plt.savefig(output_path)
 
-    def plot_support_vs_confidence(self, output_path='support_vs_confidence.png'):
+    def plot_support_vs_confidence(self, output_path='evaluation/reports/Hybrid_FPGrowth_CF/support_vs_confidence.png'):
         supp_col = self._get_supp_col()
         if not supp_col or 'confidence' not in self.all_rules.columns:
             print("Missing support or confidence columns.")
@@ -85,7 +85,7 @@ class AssociationRuleAnalyzer:
         plt.yscale('log')
         plt.title('Rule Strength (Lift) vs. Confidence')
         plt.legend()
-        plt.savefig('quality_diagnostics.png')
+        plt.savefig('evaluation/reports/Hybrid_FPGrowth_CF/quality_diagnostics.png')
 
     def print_average_lift(self):
         if 'lift' in self.all_rules.columns:
@@ -94,7 +94,7 @@ class AssociationRuleAnalyzer:
         else:
             print("Lift column not found in data.")
 
-    def plot_rule_contribution_histogram(self, stats_json_path="evaluation/reports/rule_activation_stats.json", output_path='rule_contribution_histogram.png'):
+    def plot_rule_contribution_histogram(self, stats_json_path="evaluation/reports/rule_activation_stats.json", output_path='evaluation/reports/Hybrid_FPGrowth_CF/ rule_contribution_histogram.png'):
         """
         Plots a histogram of the rule_vs_cf_ratio across all clusters and prints the average.
         """

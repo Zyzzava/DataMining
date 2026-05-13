@@ -4,10 +4,14 @@ import os
 from sklearn.decomposition import TruncatedSVD
 
 def plot_svd_variance(tfidf_matrix, random_seed):
+    # Create folder in clustering/reports called 'SVD' if it doesn't exist
+    if not os.path.exists("clustering/reports/SVD"):
+        os.makedirs("clustering/reports/SVD")
+
     # if already exit, just plot 
-    if os.path.exists("svd_variance_plot.png"):
+    if os.path.exists("clustering/reports/SVD/svd_variance_plot.png"):
         print("\n[INFO] SVD variance plot already exists. Loading from file...")
-        img = plt.imread("svd_variance_plot.png")
+        img = plt.imread("clustering/reports/SVD/svd_variance_plot.png")
         plt.imshow(img)
         plt.axis('off')
         plt.show()
@@ -37,5 +41,5 @@ def plot_svd_variance(tfidf_matrix, random_seed):
     plt.legend()
     plt.grid(True, alpha=0.3)
     # Save the plot for future reference
-    plt.savefig("svd_variance_plot.png", dpi=300, bbox_inches='tight')
+    plt.savefig("clustering/reports/SVD/svd_variance_plot.png", dpi=300, bbox_inches='tight')
     plt.show()

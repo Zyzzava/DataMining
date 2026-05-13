@@ -1,3 +1,0 @@
-Silhouette Score Evaluation for svd200_kmeans_55
---------------------------------------------------
-Silhouette Score: None
