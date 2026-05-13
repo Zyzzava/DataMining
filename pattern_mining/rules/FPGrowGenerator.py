@@ -64,57 +64,33 @@ class FPGrowthGenerator(BaseRuleGenerator):
 
             if self.verbose:
                 print(f"[FP-Growth] Generated {len(rules)} rules based on support and confidence.")
-
-    def predict(self, seed_tracks, cluster_id, max_recommendations=None):
+        
+    def predict_with_metadata(self, seed_tracks, cluster_id, max_recommendations=None):
         rules_df = self.cluster_rules.get(cluster_id, pd.DataFrame())
         if rules_df.empty:
             return []
             
         recommendations = []
+        seen_recs = set() # O(1) lookup set
         seed_set = frozenset([str(t) for t in seed_tracks])
         
-        # Sort by confidence to prioritize the most likely transitions
-        sorted_rules = rules_df.sort_values(by='confidence', ascending=False)
-        
-        for _, rule in sorted_rules.iterrows():
-            if rule['antecedents'].issubset(seed_set):
-                for track in rule['consequents']:
-                    if track not in seed_set and track not in recommendations:
-                        recommendations.append(track)
-                        if max_recommendations and len(recommendations) >= max_recommendations:
-                            return recommendations
-        return recommendations
-    
-    def predict_with_metadata(self, seed_tracks, cluster_id):
-        """
-        Extracts rules with metrics. Support is included to track activation statistics.
-        """
-        rules_df = self.cluster_rules.get(cluster_id, pd.DataFrame())
-        if rules_df.empty:
-            return []
-            
-        recommendations_metadata = []
-        seed_set = frozenset([str(t) for t in seed_tracks])
-        
-        # mlxtend uses 'support' for rule-level support (antecedent AND consequent)
-        support_col = 'support' if 'support' in rules_df.columns else 'antecedent support'
-        
+        # NO SORTING: Iterating over rules exactly as they appear in the DataFrame
         for _, rule in rules_df.iterrows():
             if rule['antecedents'].issubset(seed_set):
                 for track in rule['consequents']:
-                    if track not in seed_set:
-                        existing_entry = next((item for item in recommendations_metadata if item["track"] == track), None)
+                    # Fast lookup check
+                    if track not in seed_set and track not in seen_recs:
+                        seen_recs.add(track)
                         
-                        entry = {
+                        # Pack the track and its metadata into a dictionary for the eval script
+                        recommendations.append({
                             'track': track,
-                            'confidence': rule['confidence'],
-                            'lift': rule['lift'],
-                            'support': rule[support_col]
-                        }
+                            'lift': rule.get('lift', 0.0),
+                            'confidence': rule.get('confidence', 0.0),
+                            'support': rule.get('support', 0.0) 
+                        })
                         
-                        if not existing_entry:
-                            recommendations_metadata.append(entry)
-                        elif entry['confidence'] > existing_entry['confidence']:
-                            existing_entry.update(entry)
-                                
-        return recommendations_metadata
+                        if max_recommendations and len(recommendations) >= max_recommendations:
+                            return recommendations
+                            
+        return recommendations
