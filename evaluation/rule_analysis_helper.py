@@ -136,6 +136,33 @@ class AssociationRuleAnalyzer:
         plt.tight_layout()
         plt.savefig(output_path)
         print(f"Histogram saved to {output_path}")
+    
+    def print_average_rule_contribution(self, stats_json_path="evaluation/reports/Hybrid_FPGrowth_CF/rule_activation_stats.json"):
+        """
+        Calculates and prints the average rule_vs_cf_ratio across all clusters.
+        """
+        import os
+        import json
+        import pandas as pd
+
+        if not os.path.exists(stats_json_path):
+            print(f"Stats file not found: {stats_json_path}")
+            return
+
+        with open(stats_json_path, "r") as f:
+            stats = json.load(f)
+
+        # Convert the dictionary to a DataFrame
+        stats_df = pd.DataFrame.from_dict(stats, orient='index')
+        
+        ratio_col = 'rule_vs_cf_ratio'
+        if ratio_col not in stats_df.columns:
+            print(f"Column {ratio_col} not found in stats.")
+            return
+
+        # Print the average ratio to the console
+        mean_ratio = stats_df[ratio_col].mean()
+        print(f"\n{'='*30}\nAVERAGE RULE CONTRIBUTION RATIO: {mean_ratio:.4f}\n{'='*30}")
 
 def main():
     analyzer = AssociationRuleAnalyzer()
