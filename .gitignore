@@ -10,3 +10,5 @@ graph/m_knn/saved_graphs/mutual_knn_graph.pkl
 
 # cache
 __pycache__/
+
+venv/
