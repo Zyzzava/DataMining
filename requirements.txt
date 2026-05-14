@@ -1,0 +1,13 @@
+matplotlib==3.10.9
+mlxtend==0.24.0
+networkx==3.5
+nltk==3.9.2
+numpy==2.4.4
+pandas==3.0.3
+python_louvain==0.16
+scikit_learn==1.8.0
+scipy==1.17.1
+seaborn==0.13.2
+spacy==3.8.11
+tqdm==4.67.1
+wordcloud==1.9.6
