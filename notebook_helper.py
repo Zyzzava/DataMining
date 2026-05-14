@@ -176,3 +176,43 @@ def compare_results(pure_cf_path, hybrid_path):
         ])
 
     return pivot_df, styled_df
+
+import pandas as pd
+
+def inspect_cluster_playlists(
+    df: pd.DataFrame, 
+    cluster_col: str, 
+    cluster_label: float, 
+    playlist_name_col: str, 
+    feature_col: str = None, 
+    n_samples: int = 5, 
+    random_state: int = 42
+) -> pd.DataFrame:
+    # Filter the DataFrame for the specific cluster
+    cluster_entries = df[df[cluster_col] == cluster_label]
+    
+    # Handle cases where the cluster has fewer entries than requested samples
+    n_samples = min(n_samples, len(cluster_entries))
+    
+    if n_samples == 0:
+        print(f"No entries found for cluster {cluster_label} in column '{cluster_col}'.")
+        return pd.DataFrame()
+        
+    # Sample the data to get a diverse representation
+    sample_df = cluster_entries.sample(n=n_samples, random_state=random_state)
+    
+    # Construct a new DataFrame for clean display
+    display_data = {
+        'Original Index': sample_df.index,
+        'Playlist Name': sample_df.get(playlist_name_col, "Unknown Playlist")
+    }
+    output_df = pd.DataFrame(display_data)
+    
+    # Optionally format and add the features column
+    if feature_col and feature_col in df.columns:
+        output_df['Features'] = sample_df[feature_col].apply(
+            lambda x: str(x)[:200] + "..." if len(str(x)) > 200 else str(x)
+        )
+        
+    # Drop the default index for a cleaner table look
+    return output_df.reset_index(drop=True)

@@ -3,7 +3,8 @@ spotify_dataset.csv
 spotify_final_healed.parquet
 spotify_fully_processed.parquet
 spotify_fully_processed_backup.parquet
-data/*
+mined_rules.parquet
+tfidf_cache/
 
 # Ignore saved graph 
 graph/knn/saved_graphs/digraph_k10_sim0.15_N84696_mknn.pkl

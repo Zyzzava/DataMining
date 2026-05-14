@@ -203,61 +203,68 @@ def plot_cumulative_importance(tfidf_matrix):
     plt.close()
 
 def plot_sparsity_analysis(tfidf_matrix, stage="Pre-Filter"):
-    """
-    Analyzes and plots the sparsity of the TF-IDF matrix. 
-    Includes aesthetic improvements for presentation and readability.
-    """
-    print(f"Generating Sparsity Analysis plot ({stage})...")
-    
-    # Calculate how many non-zero features exist in each document (row)
+    # 1. Calculate non-zero features per document and sort them descending
     non_zeros_per_doc = np.asarray((tfidf_matrix > 0).sum(axis=1)).ravel()
-    empty_docs = np.sum(non_zeros_per_doc == 0)
+    sorted_features = np.sort(non_zeros_per_doc)[::-1]
     
-    # Calculate overall matrix sparsity
+    # 2. Calculate matrix statistics
     n_elements = tfidf_matrix.shape[0] * tfidf_matrix.shape[1]
     n_nonzero = tfidf_matrix.nnz if issparse(tfidf_matrix) else np.count_nonzero(tfidf_matrix)
     overall_sparsity = (1 - (n_nonzero / n_elements)) * 100
     
-    # Set a cleaner, modern Seaborn style
+    empty_docs = np.sum(non_zeros_per_doc == 0)
+    total_docs = len(non_zeros_per_doc)
+    
+    # 3. Setup aesthetics
     sns.set_theme(style="whitegrid", context="talk")
+    fig, ax = plt.subplots(figsize=(14, 8))
     
-    # Slightly wider figure for better text fitting
-    plt.figure(figsize=(12, 7))
+    # X axis is just the rank index (0 to total_docs)
+    x = np.arange(total_docs)
     
-    # Plot the distribution with a slightly softer purple and dark borders
-    ax = sns.histplot(non_zeros_per_doc, bins=50, kde=False, 
-                      color='#8E44AD', edgecolor='black', alpha=0.85)
+    # 4. Plot the main curve and fill beneath it
+    ax.plot(x, sorted_features, color='#2980B9', linewidth=2.5, label='Feature Count per Playlist')
+    ax.fill_between(x, sorted_features, color='#3498DB', alpha=0.2)
     
-    # Add informative titles and labels with slight padding
-    plt.title(f"Distribution of Non-Zero Features per Document ({stage})\nOverall Matrix Sparsity: {overall_sparsity:.4f}%", pad=15)
-    plt.xlabel("Number of Non-Zero Features (Words) per Playlist", labelpad=10)
-    plt.ylabel("Frequency (Number of Playlists)", labelpad=10)
+    # 5. Highlight the empty row section explicitly (if there are any)
+    if empty_docs > 0:
+        empty_start_idx = total_docs - empty_docs
+        
+        # Shade the region where playlists have 0 features
+        ax.axvspan(empty_start_idx, total_docs, color='#E74C3C', alpha=0.15, 
+                   label=f'Zero-Feature Zone\n({empty_docs:,} Empty Playlists)')
+        
+        # Draw a definitive cut-off line
+        ax.axvline(x=empty_start_idx, color='#C0392B', linestyle='--', linewidth=2)
+        
+        # Add a text annotation pointing to the empty zone
+        ax.annotate(f"{empty_docs:,} Empty Rows", 
+                    xy=(empty_start_idx + (empty_docs/2), 0), 
+                    xytext=(0, 40), textcoords="offset points",
+                    ha="center", va="bottom", fontsize=13, color="#C0392B", fontweight="bold",
+                    arrowprops=dict(arrowstyle="->", color="#C0392B", lw=1.5))
 
+    # 6. Formatting and Labels
+    ax.set_title(f"TF-IDF Matrix Sparsity Analysis ({stage})\nOverall Matrix Sparsity: {overall_sparsity:.4f}%", 
+                 pad=20, fontweight='bold')
+    ax.set_xlabel("Playlists (Ranked from Most Features to Fewest)", labelpad=15)
+    ax.set_ylabel("Number of Extracted Features (Words)", labelpad=15)
     
-    # Add vertical lines for mean and median with modern colors
-    mean_val = np.mean(non_zeros_per_doc)
-    median_val = np.median(non_zeros_per_doc)
-    plt.axvline(mean_val, color='#F39C12', linestyle='dashed', linewidth=2.5, label=f'Mean: {mean_val:.1f}')
-    plt.axvline(median_val, color='#27AE60', linestyle='dashed', linewidth=2.5, label=f'Median: {median_val:.1f}')
+    # Improve limits so the plot is flush
+    ax.set_xlim(0, total_docs)
+    ax.set_ylim(0, max(sorted_features) + (max(sorted_features) * 0.05))
     
-    # Clean up the legend and axes
-    plt.legend(frameon=True, shadow=True, facecolor='white', fontsize=11)
-    sns.despine() # Removes the boxy top and right outline lines
+    ax.legend(loc='upper right', frameon=True, shadow=True, facecolor='white', fontsize=12)
+    sns.despine(left=True, bottom=True) 
     
     plt.tight_layout()
     
-    # Save the plot (using dpi=300 makes the image much crisper)
-    filename = f"{OUTPUT_DIR}/sparsity_analysis_{stage.lower().replace('-', '_')}.png"
-    plt.savefig(filename, dpi=300)
-    
-    # Show inline if running in a notebook, then close
+    # 7. Display and clean up
     plt.show()
     plt.close()
     
-    # Reset seaborn theme back to default so it doesn't affect your other plots unexpectedly
+    # Reset seaborn theme
     sns.reset_orig()
-    
-    return overall_sparsity, non_zeros_per_doc
 
 def generate_comprehensive_report(tfidf_matrix, cutoffs, doc_freqs):
     """
