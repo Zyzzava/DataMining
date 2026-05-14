@@ -168,6 +168,16 @@ def plot_cumulative_importance(tfidf_matrix):
     Calculates the cumulative sum of TF-IDF weights to determine optimal max_features.
     Returns the feature counts required to hit 80%, 90%, and 95% total variance.
     """
+    # if does exist - just load otherwise make it 
+    if os.path.exists(f"{OUTPUT_DIR}/cumulative_importance.png"):
+        print("[INFO] Cumulative importance plot already exists. Skipping generation.")
+        # Plot it
+        plt.figure(figsize=(10, 6))
+        plt.imshow(plt.imread(f"{OUTPUT_DIR}/cumulative_importance.png"))
+        plt.axis('off')
+        plt.show()
+        return None
+
     avg_weights = np.asarray(tfidf_matrix.mean(axis=0)).ravel()
     sorted_weights = np.sort(avg_weights)[::-1]
     

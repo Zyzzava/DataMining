@@ -25,6 +25,11 @@ def fix_nested_quotes(line):
 
 def load_and_heal_data():
     """Cleans, heals, and loads the dataset into a DataFrame."""
+    # Check if the fully processed file already exists to skip all steps
+    if os.path.exists(FULLY_PROCESSED_PARQUET):
+        print(f"Fully processed file '{FULLY_PROCESSED_PARQUET}' already exists. Loading it directly...")
+        return pd.read_parquet(FULLY_PROCESSED_PARQUET)
+
     if os.path.exists(FINAL_PARQUET):
         return pd.read_parquet(FINAL_PARQUET)
 
