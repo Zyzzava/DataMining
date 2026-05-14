@@ -9,3 +9,6 @@ data/*
 graph/knn/saved_graphs/digraph_k10_sim0.15_N84696_mknn.pkl
 graph/knn/saved_graphs/knn_k10_sim0.15_N84696.pkl
 graph/m_knn/saved_graphs/mutual_knn_graph.pkl
+
+# cache
+__pycache__/
